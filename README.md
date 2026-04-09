@@ -1,6 +1,6 @@
 # diplomat-gate
 
-Approval gates for the two most dangerous things your AI agent can do:
+Approval gates for your AI agent can do:
 **send money** and **send email**.
 
 Your agent can `stripe.charges.create()` with no amount limit.
