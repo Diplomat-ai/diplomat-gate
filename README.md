@@ -1,12 +1,12 @@
 # diplomat-gate
 
-Approval gates for things your AI agent can do:
+Approval gates for the two most dangerous things your AI agent can do:
 **send money** and **send email**.
 
 Your agent can `stripe.charges.create()` with no amount limit.
 Your agent can `smtp.sendmail()` to anyone, anytime.
 diplomat-gate intercepts these calls and returns **CONTINUE**, **REVIEW**, or **STOP**
-before execution under 1ms.
+before execution — in under 1ms.
 
 ```
 pip install diplomat-gate
@@ -165,10 +165,10 @@ Without PyYAML, use `Gate.from_dict()` with a Python dictionary instead.
 
 Benchmarked with all 9 policies loaded, 100 evaluations each:
 
-| Domain | Avg latency | Max latency |
-|---|---|---|
-| Payment (5 policies) | 0.17ms | < 1ms |
-| Email (4 policies) | 0.02ms | < 1ms |
+| Domain | Avg latency | p50 | p99 |
+|---|---|---|---|
+| Payment (5 policies) | 0.57ms | 0.26ms | < 1ms |
+| Email (4 policies) | 0.07ms | 0.05ms | < 1ms |
 
 ## Use with diplomat-agent
 
