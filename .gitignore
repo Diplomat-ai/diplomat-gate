@@ -30,3 +30,4 @@ diplomat-audit.db
 .idea/
 .vscode/
 *.swp
+demos/openclaw/demo-audit.db

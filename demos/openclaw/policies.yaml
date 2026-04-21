@@ -1,0 +1,44 @@
+# diplomat-gate policies for OpenClaw agent email actions.
+#
+# Rationale
+# ---------
+# An OpenClaw agent can dispatch emails on the user's behalf. Emails sent to
+# legal or insurance domains without explicit user approval can create real-world
+# liability.  Rate-limiting prevents bursts of automated correspondence that the
+# user never approved.
+#
+# Inspired by a publicly documented incident (Jan 2026) where an OpenClaw agent
+# sent a legal rebuttal to an insurance company without user approval.
+# The user had a net-positive outcome — the insurer reopened the claim — but the
+# action was never explicitly approved. diplomat-gate makes the implicit explicit.
+#
+# Policy substitutions vs. spec (see demos/openclaw/README.md for details)
+# -------------------------------------------------------------------------
+# - "parameter_match + requires: user_approved_in_last_seconds <= 60"
+#   → replaced with email.domain_blocklist (on_fail: STOP)
+#   Reason: moteur 0.3.0 has no parameter_check type. Domain blocklist captures
+#   the spirit: any email to a legal/insurance domain is blocked outright.
+# - "parameter_check acting_on_behalf_of"
+#   → replaced with email.rate_limit (on_fail: REVIEW)
+#   Reason: rate limiting is the closest available proxy for "pause and ask a human".
+#   At max:1/1h, a second email in the same window goes to the review queue.
+
+policies:
+  - id: email.domain_blocklist
+    name: Block emails to legal/insurance domains
+    blocked:
+      - "*@lemonade.com"
+      - "*@*insurance*"
+      - "*@*legal*"
+      - "*@*lawyer*"
+    on_fail: STOP
+
+  - id: email.rate_limit
+    name: Rate-limit outbound emails — hold bursts for human review
+    max: 2
+    window: "1h"
+    on_fail: REVIEW
+
+audit:
+  enabled: true
+  path: "./demo-audit.db"
