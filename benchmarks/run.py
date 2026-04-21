@@ -119,6 +119,13 @@ def main() -> None:
     parser.add_argument("--iterations", type=int, default=5_000)
     parser.add_argument("--json", type=Path, default=None, help="Write results to a JSON file")
     parser.add_argument("--only", type=str, default=None, help="Run a single named benchmark")
+    parser.add_argument(
+        "--assert-p95-under",
+        type=float,
+        default=None,
+        metavar="MS",
+        help="Exit 1 if any benchmark p95 latency exceeds this threshold (milliseconds)",
+    )
     args = parser.parse_args()
 
     results: list[BenchResult] = []
@@ -146,6 +153,17 @@ def main() -> None:
     if args.json:
         args.json.write_text(json.dumps([asdict(r) for r in results], indent=2))
         print(f"\nresults written to {args.json}")
+
+    if args.assert_p95_under is not None:
+        threshold_us = args.assert_p95_under * 1_000  # ms → µs
+        failures = [r for r in results if r.p95_us > threshold_us]
+        if failures:
+            for f in failures:
+                print(
+                    f"FAIL: {f.name} p95={f.p95_us:.2f}µs > {threshold_us:.0f}µs "
+                    f"({args.assert_p95_under}ms threshold)"
+                )
+            raise SystemExit(1)
 
 
 if __name__ == "__main__":

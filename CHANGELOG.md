@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] — Unreleased
+
+Demo sprint: OpenClaw reproducible demo, rewritten HN-optimized README,
+multi-framework gallery, human conversion test protocol, and release
+validation pipeline.
+
+### Added
+
+- `demos/openclaw/` — 60-second self-contained demo reproducing the
+  publicly documented OpenClaw/Lemonade Insurance incident pattern.
+  `python demos/openclaw/run.py` — no API key, no Docker, no setup.
+- `scripts/validate_release.py` — 11-step release gate (ruff, pytest,
+  benchmarks, build, twine, smoke install, CLI, demo).
+- `tests/test_release_readiness.py` — release readiness test suite.
+- `.github/workflows/smoke.yml` — 12-combination OS × Python matrix.
+- `docs/conversion-checklist.md` — human conversion test protocol.
+
+### Changed
+
+- README rewritten for HN audience: demo above the fold, "The problem"
+  with aggregate scanner data, multi-framework compatibility table.
+- `_version.py` / `pyproject.toml` bumped to 0.3.0.
+
 ## [0.2.0] — 2026-04-21
 
 Major hardening release. Core API is backward compatible with 0.1.x;
