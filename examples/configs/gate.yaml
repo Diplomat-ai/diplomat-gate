@@ -1,0 +1,22 @@
+# Sample configuration used by examples/02_yaml_config.py.
+# Mirrors a realistic subset of gate.yaml.example.
+version: "1"
+
+payment:
+  - id: payment.amount_limit
+    max_amount: 1000
+    severity: critical
+    on_fail: STOP
+
+  - id: payment.velocity
+    max_txn: 5
+    window: 1m
+    severity: high
+    on_fail: STOP
+
+email:
+  - id: email.domain_blocklist
+    blocked:
+      - "*.evil.com"
+    severity: critical
+    on_fail: STOP
