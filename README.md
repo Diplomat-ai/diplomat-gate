@@ -5,17 +5,112 @@
 [![License](https://img.shields.io/pypi/l/diplomat-gate)](https://github.com/Diplomat-ai/diplomat-gate/blob/main/LICENSE)
 [![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml)
 
-**Runtime action firewall for AI agents.** Deterministic, local, no LLM.
+**Your AI agent just emailed your insurance company. You didn't ask it to.**
 
-Your agent can call `stripe.charges.create()` with no amount limit. Your
-agent can call `smtp.sendmail()` to anyone, anytime. `diplomat-gate`
-intercepts these calls, runs them through a set of policies, and returns
-**CONTINUE / REVIEW / STOP** before execution — typically in under
-50 µs for a small policy set.
+An AI assistant inferred the claims address from a document the user
+uploaded and sent a legal rebuttal — autonomously, without confirmation.
+Nothing in the framework stopped it.
+
+This is what happens without a runtime guardrail. Here is the fix:
 
 ```
 pip install diplomat-gate
 ```
+
+```yaml
+# 10 lines of YAML
+policies:
+  - type: email.domain_blocklist
+    blocked: ["*@lemonade.com", "*@*insurance*", "*@*legal*"]
+    on_fail: STOP
+  - type: email.rate_limit
+    max: 2
+    window: 1h
+    on_fail: REVIEW
+audit:
+  enabled: true
+```
+
+```
+$ python demos/openclaw/run.py --ci
+
+SCENARIO 1 — OpenClaw agent, no diplomat-gate
+  Emails sent without approval : 1
+  Recipient                    : claims@lemonade.com
+  🔥 Legal email sent to insurance company without user approval.
+
+SCENARIO 2 — Same agent, behind diplomat-gate
+  Verdict: STOP
+    - email.domain_blocklist: Domain 'lemonade.com' is on the blocklist
+  🛡  Email blocked before reaching the SMTP server.
+  Emails actually sent: 0
+
+  to: alice@example.com               Verdict: CONTINUE
+  to: bob@example.com                 Verdict: REVIEW  (email.rate_limit)
+
+SCENARIO 3 — Every verdict is hash-chained
+  $ diplomat-gate audit verify
+  OK: chain valid (3 record(s) checked)
+```
+
+_No API key. No Docker. No setup. Run it yourself:_
+`python demos/openclaw/run.py`
+
+---
+
+## The problem
+
+AI agents call APIs with real-world side effects — send email, charge a
+card, delete files, POST to a webhook — and most orchestration frameworks
+treat hard enforcement as the operator's responsibility. In practice that
+means there is none.
+
+Running `diplomat-agent scan` on a typical agent codebase:
+
+```
+$ diplomat-agent scan ./my_agent
+
+Scanning for tool calls with external side effects...
+
+  email.send            12 call sites    0 / 12 have a runtime guard
+  payment.charge         4 call sites    0 /  4 have a runtime guard
+  files.delete           3 call sites    0 /  3 have a runtime guard
+  webhook.post           2 call sites    0 /  2 have a runtime guard
+  browser.navigate       7 call sites    0 /  7 have a runtime guard
+
+  28 call sites with side effects found.
+   0 are protected by a runtime guardrail.
+
+Recommended: diplomat-gate
+```
+
+`diplomat-gate` is the missing runtime layer. It intercepts calls,
+evaluates them against a YAML policy file, and returns
+**CONTINUE / REVIEW / STOP** before execution — in under 50 µs for a
+small policy set, with no LLM call, no network request.
+
+## Works with every framework
+
+diplomat-gate is framework-agnostic. Any call that can be represented as a
+Python `dict` works out of the box. Adapters for popular SDKs are included.
+
+| Framework | Integration | How |
+|---|---|---|
+| OpenAI (tool calls) | ✓ built-in adapter | `from diplomat_gate.adapters.openai import filter_allowed` |
+| Anthropic (tool_use) | ✓ built-in adapter | `from diplomat_gate.adapters.anthropic import filter_allowed` |
+| LangChain tools | ✓ built-in adapter | `from diplomat_gate.adapters.langchain import gated_tool` |
+| OpenClaw | ✓ dict API | `gate.evaluate({"action": ..., ...})` |
+| PythonClaw | ✓ dict API | `gate.evaluate({"action": ..., ...})` |
+| CrewAI | ✓ dict API | wrap any tool call with `gate.evaluate(...)` |
+| AutoGen | ✓ dict API | wrap any tool call with `gate.evaluate(...)` |
+| Any Python agent | ✓ dict API | if it calls an API, it can be gated |
+
+## What's new in 0.3.0
+
+- **Reproducible OpenClaw demo** — `python demos/openclaw/run.py` shows
+  the insurance email incident in under 60 seconds, no API key needed.
+- **Release validation pipeline** — `scripts/validate_release.py` runs an
+  11-step gate: lint → tests → benchmarks → build → install → smoke → demo.
 
 ## What's new in 0.2.0
 
