@@ -1,0 +1,40 @@
+name: Smoke
+
+on:
+  push:
+    branches: ["main", "v*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: "py${{ matrix.python-version }} / ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package + test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[yaml]" pytest pytest-cov
+
+      - name: Run tests
+        run: pytest --tb=short -q
+
+      - name: Run demo (CI mode)
+        run: python demos/openclaw/run.py --ci
+
+      - name: Verify audit chain
+        run: diplomat-gate --no-color audit verify --db demos/openclaw/demo-audit.db
