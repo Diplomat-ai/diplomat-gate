@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent.parent
@@ -38,11 +37,13 @@ except ImportError:
 
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
+
 def _use_rich() -> bool:
     if CI_MODE:
         return False
     try:
         import rich  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -55,6 +56,7 @@ def print_header(text: str) -> None:
     if _use_rich():
         from rich import print as rprint
         from rich.rule import Rule
+
         rprint(Rule(f"[bold]{text}[/bold]", style="blue"))
     else:
         width = 60
@@ -76,6 +78,7 @@ def _pause() -> None:
 
 
 # ── Scenarios ─────────────────────────────────────────────────────────────────
+
 
 def scenario_1_unprotected() -> None:
     print_header("SCENARIO 1 — OpenClaw agent, no diplomat-gate")
@@ -128,7 +131,9 @@ def scenario_2_protected() -> None:
         print(f"    - {v.policy_id}: {v.message}")
 
     if verdict.allowed:
-        agent_send_email(client, **{k: val for k, val in call.items() if k not in ("action", "agent_id")})
+        agent_send_email(
+            client, **{k: val for k, val in call.items() if k not in ("action", "agent_id")}
+        )
     else:
         print(f"  {_fmt('🛡  Email blocked before reaching the SMTP server.', 'green')}")
 
@@ -137,10 +142,20 @@ def scenario_2_protected() -> None:
     # Show rate-limit (REVIEW) path: safe domain, first email passes, second is held
     print()
     safe_calls = [
-        {"action": "agent.send_email", "to": "alice@example.com",
-         "subject": "Hi Alice", "body": "Hey!", "agent_id": "personal_agent_01"},
-        {"action": "agent.send_email", "to": "bob@example.com",
-         "subject": "Hi Bob",   "body": "Hey!", "agent_id": "personal_agent_01"},
+        {
+            "action": "agent.send_email",
+            "to": "alice@example.com",
+            "subject": "Hi Alice",
+            "body": "Hey!",
+            "agent_id": "personal_agent_01",
+        },
+        {
+            "action": "agent.send_email",
+            "to": "bob@example.com",
+            "subject": "Hi Bob",
+            "body": "Hey!",
+            "agent_id": "personal_agent_01",
+        },
     ]
     for sc in safe_calls:
         sv = gate.evaluate(sc)
@@ -161,27 +176,37 @@ def scenario_3_audit() -> None:
 
     audit_db = str(DEMO_DIR / "demo-audit.db")
     result = subprocess.run(
-        [sys.executable, "-m", "diplomat_gate.cli", "--no-color", "audit", "verify",
-         "--db", audit_db],
+        [
+            sys.executable,
+            "-m",
+            "diplomat_gate.cli",
+            "--no-color",
+            "audit",
+            "verify",
+            "--db",
+            audit_db,
+        ],
         capture_output=True,
         text=True,
         cwd=REPO,
     )
     output = (result.stdout or result.stderr or "").strip()
 
-    print(f"  $ diplomat-gate audit verify")
+    print("  $ diplomat-gate audit verify")
     if output:
         for line in output.splitlines():
             print(f"  {line}")
         # Ensure "Chain valid" appears for CI marker even if CLI format changes
         if "valid" not in output.lower():
             from diplomat_gate.audit import verify_chain
+
             vr = verify_chain(audit_db)
             if vr.valid:
                 print(f"  {_fmt('✓ Chain valid', 'green')} — {vr.records_checked} verdicts.")
     else:
         # Fallback: call verify_chain directly
         from diplomat_gate.audit import verify_chain
+
         vr = verify_chain(audit_db)
         if vr.valid:
             print(f"  {_fmt('✓ Chain valid', 'green')} ({vr.records_checked} record(s) checked)")

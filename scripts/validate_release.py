@@ -10,18 +10,18 @@ Exit 0 if all pass, exit 1 on first failure.
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
 import tempfile
-import textwrap
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 PYTHON = sys.executable
 
 
-def _run(cmd: list[str], *, cwd: Path | None = None, capture: bool = True) -> subprocess.CompletedProcess:
+def _run(
+    cmd: list[str], *, cwd: Path | None = None, capture: bool = True
+) -> subprocess.CompletedProcess:
     return subprocess.run(
         cmd,
         cwd=cwd or REPO,
@@ -55,9 +55,13 @@ def main() -> None:
         (
             "3/11 pytest --cov",
             [
-                PYTHON, "-m", "pytest",
-                "--cov=diplomat_gate", "--cov-fail-under=80",
-                "-q", "--tb=short",
+                PYTHON,
+                "-m",
+                "pytest",
+                "--cov=diplomat_gate",
+                "--cov-fail-under=80",
+                "-q",
+                "--tb=short",
             ],
         ),
         (
@@ -67,9 +71,12 @@ def main() -> None:
         (
             "5/11 benchmarks p95<5ms",
             [
-                PYTHON, "benchmarks/run.py",
-                "--iterations", "1000",
-                "--assert-p95-under", "5.0",
+                PYTHON,
+                "benchmarks/run.py",
+                "--iterations",
+                "1000",
+                "--assert-p95-under",
+                "5.0",
             ],
         ),
         ("6/11 build sdist+wheel", [PYTHON, "-m", "build"]),
@@ -107,12 +114,16 @@ def main() -> None:
 
         # Step 9 — diplomat-gate --help
         venv_bin = venv / ("Scripts" if sys.platform == "win32" else "bin")
-        diplomat_cmd = venv_bin / ("diplomat-gate.exe" if sys.platform == "win32" else "diplomat-gate")
+        diplomat_cmd = venv_bin / (
+            "diplomat-gate.exe" if sys.platform == "win32" else "diplomat-gate"
+        )
         if not _check("9/11 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
             sys.exit(1)
 
         # Step 10 — audit verify --help
-        if not _check("10/11 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]):
+        if not _check(
+            "10/11 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
+        ):
             sys.exit(1)
 
     # Step 11 — demo --ci

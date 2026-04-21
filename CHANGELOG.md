@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.0] — Unreleased
+## [0.3.0] — 2026-04-21
 
 Demo sprint: OpenClaw reproducible demo, rewritten HN-optimized README,
 multi-framework gallery, human conversion test protocol, and release

@@ -23,14 +23,16 @@ def repo_root() -> Path:
 
 # ── Basic import + YAML load smoke ───────────────────────────────────────────
 
+
 def test_import_no_extras():
     """Import core diplomat_gate with zero extras installed."""
     import diplomat_gate  # noqa: F401
-    from diplomat_gate import Gate, Decision  # noqa: F401
+    from diplomat_gate import Decision, Gate  # noqa: F401
 
 
 def test_version_is_string():
     import diplomat_gate
+
     assert isinstance(diplomat_gate.__version__, str)
     assert len(diplomat_gate.__version__.split(".")) == 3
 
@@ -38,9 +40,8 @@ def test_version_is_string():
 def test_gate_from_dict_basic():
     """Load a YAML-equivalent dict config, evaluate a verdict — no extras needed."""
     from diplomat_gate import Gate
-    gate = Gate.from_dict({
-        "email": [{"id": "email.domain_blocklist", "blocked": ["*@evil.com"]}]
-    })
+
+    gate = Gate.from_dict({"email": [{"id": "email.domain_blocklist", "blocked": ["*@evil.com"]}]})
     v = gate.evaluate({"action": "send_email", "to": "test@evil.com"})
     assert v.blocked
 
@@ -49,19 +50,23 @@ def test_gate_from_yaml_requires_pyyaml(tmp_path, repo_root):
     """Gate.from_yaml shows helpful error when PyYAML is absent (import mock)."""
     # We don't uninstall PyYAML in CI — just verify the error path exists and
     # that load_from_yaml actually calls yaml.safe_load (coverage path).
-    yaml = pytest.importorskip("yaml")  # skip if somehow not installed
-    import diplomat_gate.policies.loader as loader
+    pytest.importorskip("yaml")  # skip if somehow not installed
     # Verify the function is importable and references yaml
     import inspect
+
+    import diplomat_gate.policies.loader as loader
+
     src = inspect.getsource(loader.load_from_yaml)
     assert "yaml" in src
 
 
 # ── Version consistency ───────────────────────────────────────────────────────
 
+
 def test_version_matches_pyproject(repo_root):
     """_version.py and pyproject.toml must report the same version."""
     import diplomat_gate
+
     pyproject = (repo_root / "pyproject.toml").read_text()
     # Find the version line robustly
     for line in pyproject.splitlines():
@@ -71,16 +76,17 @@ def test_version_matches_pyproject(repo_root):
     else:
         pytest.fail("version not found in pyproject.toml")
     assert diplomat_gate.__version__ == pyproject_version, (
-        f"_version.py says {diplomat_gate.__version__!r}, "
-        f"pyproject.toml says {pyproject_version!r}"
+        f"_version.py says {diplomat_gate.__version__!r}, pyproject.toml says {pyproject_version!r}"
     )
 
 
 # ── Policy registry count (ties README claims to code) ───────────────────────
 
+
 def test_policy_registry_has_expected_entries():
     """The loader registry must have exactly 9 entries (as documented)."""
     from diplomat_gate.policies.loader import _POLICY_MAP  # noqa: PLC2401
+
     assert len(_POLICY_MAP) == 9, (
         f"Expected 9 policies in _POLICY_MAP, got {len(_POLICY_MAP)}. "
         "Update this test AND the README if you add/remove policies."
@@ -89,9 +95,11 @@ def test_policy_registry_has_expected_entries():
 
 # ── Audit hash chain ──────────────────────────────────────────────────────────
 
+
 def test_audit_compute_record_hash_produces_hex64(tmp_path):
     """SHA-256 produces a 64-char hex string."""
     from diplomat_gate.audit import compute_record_hash
+
     record = {
         "verdict_id": "test-id",
         "sequence": 1,
@@ -113,6 +121,7 @@ def test_audit_compute_record_hash_produces_hex64(tmp_path):
 def test_audit_chain_valid(tmp_path):
     """Write 3 verdicts and verify the chain is valid."""
     from diplomat_gate import Gate
+
     db = str(tmp_path / "audit.db")
     gate = Gate.from_dict(
         {"email": [{"id": "email.domain_blocklist", "blocked": ["*@blocked.com"]}]},
@@ -124,18 +133,22 @@ def test_audit_chain_valid(tmp_path):
     gate.close()
 
     from diplomat_gate.audit import verify_chain
+
     result = verify_chain(db)
     assert result.valid, f"Chain invalid: {result}"
 
 
 # ── CLI discoverability ───────────────────────────────────────────────────────
 
+
 @pytest.mark.integration
 def test_cli_help_responds(repo_root):
     """diplomat-gate --help must exit 0."""
     result = subprocess.run(
         [sys.executable, "-m", "diplomat_gate.cli", "--help"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True,
+        text=True,
+        timeout=10,
     )
     assert result.returncode == 0, result.stderr
 
@@ -145,12 +158,15 @@ def test_cli_audit_verify_help(repo_root):
     """diplomat-gate audit verify --help must exit 0."""
     result = subprocess.run(
         [sys.executable, "-m", "diplomat_gate.cli", "audit", "verify", "--help"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True,
+        text=True,
+        timeout=10,
     )
     assert result.returncode == 0, result.stderr
 
 
 # ── OpenClaw demo regression marker (added in Phase 2) ───────────────────────
+
 
 @pytest.mark.integration
 def test_openclaw_demo_produces_markers(repo_root):
