@@ -92,8 +92,8 @@ Recommended: diplomat-gate
 
 `diplomat-gate` is the missing deterministic policy layer. It intercepts calls,
 evaluates them against a YAML policy file, and returns
-**CONTINUE / REVIEW / STOP** before execution — in ~150 µs for a
-5-policy set, with no LLM call, no network request.
+**CONTINUE / REVIEW / STOP** before execution — in ~20 µs for a single-policy
+evaluation, ~500 µs mean for a 5-policy set, with no LLM call, no network request.
 
 ## Works with every framework
 
@@ -342,15 +342,17 @@ Custom policies: see [`docs/writing-policies.md`](docs/writing-policies.md).
 
 Microbenchmarks (`python benchmarks/run.py`, dev laptop, 5 000 iters):
 
-| Scenario              | mean    | p95     | p99     | ops/s   |
-| --------------------- | ------- | ------- | ------- | ------- |
-| `simple_allow`        | ~6 µs   | ~6 µs   | ~7 µs   | 172 000 |
-| `simple_block`        | ~6 µs   | ~7 µs   | ~8 µs   | 154 000 |
-| `multi_policy` (5)    | ~146 µs | ~319 µs | ~337 µs | 6 800   |
-| `with_audit_sqlite`   | ~50 µs  | ~44 µs  | ~69 µs  | 19 800  |
+| Scenario              | mean    | p95     | p99      | ops/s  |
+| --------------------- | ------- | ------- | -------- | ------ |
+| `simple_allow`        | ~18 µs  | ~31 µs  | ~41 µs   | 54 000 |
+| `simple_block`        | ~19 µs  | ~33 µs  | ~47 µs   | 52 000 |
+| `multi_policy` (5)    | ~496 µs | ~958 µs | ~1564 µs | 2 000  |
+| `with_audit_sqlite`   | ~558 µs | ~625 µs | ~1925 µs | 1 800  |
 
-Audit numbers are dominated by `fsync`. Re-run on your hardware before
-quoting publicly.
+Audit numbers are dominated by `fsync`. The p99 long tail on `with_audit_sqlite`
+reflects SQLite fsync latency spikes — expect similar behavior on shared
+storage. Re-run `python benchmarks/run.py` on your hardware before quoting
+publicly.
 
 ## Zero mandatory dependencies
 
