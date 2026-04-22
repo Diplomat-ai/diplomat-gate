@@ -1,0 +1,13 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Diplomat-ai/diplomat-gate/security/advisories/new
+    about: >
+      Do not open public issues for security vulnerabilities.
+      Use GitHub's private security advisory flow instead.
+  - name: Documentation
+    url: https://github.com/Diplomat-ai/diplomat-gate/tree/main/docs
+    about: Read the docs before opening a "how do I…" issue.
+  - name: Discussions / questions
+    url: https://github.com/Diplomat-ai/diplomat-gate/discussions
+    about: Questions, ideas, and general discussion go here.

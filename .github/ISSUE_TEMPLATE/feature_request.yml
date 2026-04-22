@@ -1,19 +1,37 @@
 name: Feature Request
-description: Suggest a new policy or feature
+description: Suggest a new policy, adapter, or feature
 labels: ["enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        diplomat-gate's core constraint: **deterministic, no LLM in the enforcement path,
+        zero mandatory new dependencies**. Features that violate this go in optional extras
+        or are out of scope. When in doubt, open this issue and we'll discuss.
   - type: textarea
     id: problem
     attributes:
-      label: Problem
-      description: What problem does this solve?
+      label: Problem statement
+      description: |
+        What real-world risk or friction does this feature address?
+        Describe the use case (e.g. "I need to block tool calls that transfer > $1000
+        to external accounts not on an allowlist").
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
       label: Proposed solution
-      description: How should it work?
+      description: |
+        How should it work? If it's a policy, show a sample YAML config block
+        and what verdict it should return.
+      placeholder: |
+        # gate.yaml snippet
+        policies:
+          - id: my_new_policy
+            on_fail: STOP
+            params:
+              threshold: 1000
     validations:
       required: true
   - type: dropdown
@@ -21,8 +39,23 @@ body:
     attributes:
       label: Domain
       options:
-        - Payment policy
-        - Email policy
+        - New policy (payment)
+        - New policy (email / comms)
+        - New policy (other domain)
+        - New adapter (LLM framework)
         - Core engine
-        - Audit trail
+        - Audit trail backend
+        - Review queue backend
+        - CLI / tooling
+        - Documentation
         - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: willing
+    attributes:
+      label: Are you willing to contribute a PR?
+      options:
+        - "Yes"
+        - "No"
+        - "Maybe, with guidance"
