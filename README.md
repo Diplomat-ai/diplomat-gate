@@ -3,7 +3,13 @@
 [![PyPI](https://img.shields.io/pypi/v/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
 [![Python](https://img.shields.io/pypi/pyversions/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
 [![License](https://img.shields.io/pypi/l/diplomat-gate)](https://github.com/Diplomat-ai/diplomat-gate/blob/main/LICENSE)
-[![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml)
+[![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/smoke.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/smoke.yml)
+
+> The enforcement layer for AI agents.
+>
+> *Deterministic. No LLM. Hash-chained audit. Works with OpenClaw, browser-use, LangChain, OpenAI Agents SDK.*
+
+![Before / after: AI agent calling stripe and smtp without a guard vs. the same calls going through diplomat-gate policies](docs/images/before-after-comparison.svg)
 
 **Your AI agent just emailed your insurance company. You didn't ask it to.**
 
@@ -11,19 +17,19 @@ An AI assistant inferred the claims address from a document the user
 uploaded and sent a legal rebuttal — autonomously, without confirmation.
 Nothing in the framework stopped it.
 
-This is what happens without a runtime guardrail. Here is the fix:
+This is what happens without a deterministic policy layer. Here is the fix:
 
 ```
-pip install diplomat-gate
+pip install "diplomat-gate[yaml]"
 ```
 
 ```yaml
 # 10 lines of YAML
 policies:
-  - type: email.domain_blocklist
+  - id: email.domain_blocklist
     blocked: ["*@lemonade.com", "*@*insurance*", "*@*legal*"]
     on_fail: STOP
-  - type: email.rate_limit
+  - id: email.rate_limit
     max: 2
     window: 1h
     on_fail: REVIEW
@@ -72,22 +78,22 @@ $ diplomat-agent scan ./my_agent
 
 Scanning for tool calls with external side effects...
 
-  email.send            12 call sites    0 / 12 have a runtime guard
-  payment.charge         4 call sites    0 /  4 have a runtime guard
-  files.delete           3 call sites    0 /  3 have a runtime guard
-  webhook.post           2 call sites    0 /  2 have a runtime guard
-  browser.navigate       7 call sites    0 /  7 have a runtime guard
+  email.send            12 call sites    0 / 12 have a deterministic policy check
+  payment.charge         4 call sites    0 /  4 have a deterministic policy check
+  files.delete           3 call sites    0 /  3 have a deterministic policy check
+  webhook.post           2 call sites    0 /  2 have a deterministic policy check
+  browser.navigate       7 call sites    0 /  7 have a deterministic policy check
 
   28 call sites with side effects found.
-   0 are protected by a runtime guardrail.
+   0 are protected by a deterministic policy layer.
 
 Recommended: diplomat-gate
 ```
 
-`diplomat-gate` is the missing runtime layer. It intercepts calls,
+`diplomat-gate` is the missing deterministic policy layer. It intercepts calls,
 evaluates them against a YAML policy file, and returns
-**CONTINUE / REVIEW / STOP** before execution — in under 50 µs for a
-small policy set, with no LLM call, no network request.
+**CONTINUE / REVIEW / STOP** before execution — in ~150 µs for a
+5-policy set, with no LLM call, no network request.
 
 ## Works with every framework
 
@@ -96,14 +102,13 @@ Python `dict` works out of the box. Adapters for popular SDKs are included.
 
 | Framework | Integration | How |
 |---|---|---|
-| OpenAI (tool calls) | ✓ built-in adapter | `from diplomat_gate.adapters.openai import filter_allowed` |
-| Anthropic (tool_use) | ✓ built-in adapter | `from diplomat_gate.adapters.anthropic import filter_allowed` |
-| LangChain tools | ✓ built-in adapter | `from diplomat_gate.adapters.langchain import gated_tool` |
 | OpenClaw | ✓ dict API | `gate.evaluate({"action": ..., ...})` |
-| PythonClaw | ✓ dict API | `gate.evaluate({"action": ..., ...})` |
-| CrewAI | ✓ dict API | wrap any tool call with `gate.evaluate(...)` |
-| AutoGen | ✓ dict API | wrap any tool call with `gate.evaluate(...)` |
+| browser-use | ✓ dict API | `gate.evaluate({"action": ..., ...})` |
+| LangChain | ✓ built-in adapter | `from diplomat_gate.adapters.langchain import gated_tool` |
+| OpenAI Agents SDK | ✓ built-in adapter | `from diplomat_gate.adapters.openai import filter_allowed` |
 | Any Python agent | ✓ dict API | if it calls an API, it can be gated |
+
+Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent framework that exposes dict-like tool calls.
 
 ## What's new in 0.3.0
 
@@ -171,15 +176,35 @@ verdict = gate.evaluate({"action": "charge_card", "amount": 15_000})
 
 ## How it works
 
-```
-Agent wants to act  ->  diplomat-gate evaluates  ->  Verdict  ->  Execute, queue, or block
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor': '#FFFFFF',
+  'primaryTextColor': '#0F172A',
+  'primaryBorderColor': '#CBD5E1',
+  'lineColor': '#64748B',
+  'fontFamily': 'ui-sans-serif, system-ui, sans-serif'
+}}}%%
 
-  +-----------+      +-----------------+      +-----------------+
-  | AI agent  | ---> |  diplomat-gate  | ---> | CONTINUE        |
-  | (any fw)  |      |  - policies     |      | / REVIEW        |
-  +-----------+      |  - audit log    |      | / STOP          |
-                     |  - review queue |      +-----------------+
-                     +-----------------+
+flowchart LR
+    A["AI agent<br/><span style='color:#64748B;font-size:12px'>LangChain · OpenClaw<br/>browser-use · OpenAI SDK</span>"]
+    B{{"diplomat-gate<br/><span style='color:#E0E7FF;font-size:12px'>policy evaluation</span>"}}
+    C["Real-world action<br/><span style='color:#D1FAE5;font-size:12px'>Stripe · SendGrid · DB</span>"]
+    D["Blocked<br/><span style='color:#FEE2E2;font-size:12px'>exception raised</span>"]
+    E["Review queue<br/><span style='color:#FEF3C7;font-size:12px'>human approval</span>"]
+    F[("SHA-256<br/>hash-chained<br/>audit trail")]
+
+    A -->|"tool call"| B
+    B -->|"CONTINUE"| C
+    B -->|"STOP"| D
+    B -->|"REVIEW"| E
+    B -.->|"every verdict"| F
+
+    style A fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+    style B fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#FFFFFF
+    style C fill:#10B981,stroke:#047857,stroke-width:1.5px,color:#FFFFFF
+    style D fill:#EF4444,stroke:#991B1B,stroke-width:1.5px,color:#FFFFFF
+    style E fill:#F59E0B,stroke:#B45309,stroke-width:1.5px,color:#FFFFFF
+    style F fill:#F1F5F9,stroke:#64748B,stroke-width:1.5px,color:#334155
 ```
 
 No LLM calls. No network requests. Pure deterministic evaluation. Each
@@ -209,7 +234,11 @@ charge(amount=50_000, customer_id="cus_123")       # STOP    -> raises Blocked
 ## Audit trail
 
 Every verdict is recorded in an append-only SQLite log with a SHA-256
-hash chain.
+hash chain. The chain is **tamper-resistant**: accidental corruption and
+post-hoc row edits are detected by the verifier. Note that
+`rebuild_chain()` can recreate a valid chain over tampered data — an
+attacker with write access to the `.db` file is not stopped by the chain
+alone. For non-repudiation, ship records to a write-once store.
 
 ```
 diplomat-gate audit verify        --db ./diplomat-audit.db
@@ -285,12 +314,12 @@ Custom policies: see [`docs/writing-policies.md`](docs/writing-policies.md).
 
 Microbenchmarks (`python benchmarks/run.py`, dev laptop, 5 000 iters):
 
-| Scenario              | mean   | p95    | p99    | ops/s   |
-| --------------------- | ------ | ------ | ------ | ------- |
-| `simple_allow`        | ~8 µs  | ~10 µs | ~12 µs | 130 000 |
-| `simple_block`        | ~10 µs | ~12 µs | ~40 µs | 100 000 |
-| `multi_policy` (5)    | ~55 µs | ~95 µs | ~110 µs | 17 000 |
-| `with_audit_sqlite`   | ~200 µs | ~300 µs | ~1.3 ms | 5 000 |
+| Scenario              | mean    | p95     | p99     | ops/s   |
+| --------------------- | ------- | ------- | ------- | ------- |
+| `simple_allow`        | ~6 µs   | ~6 µs   | ~7 µs   | 172 000 |
+| `simple_block`        | ~6 µs   | ~7 µs   | ~8 µs   | 154 000 |
+| `multi_policy` (5)    | ~146 µs | ~319 µs | ~337 µs | 6 800   |
+| `with_audit_sqlite`   | ~50 µs  | ~44 µs  | ~69 µs  | 19 800  |
 
 Audit numbers are dominated by `fsync`. Re-run on your hardware before
 quoting publicly.
@@ -352,6 +381,17 @@ trail, real-time dashboard, managed approval routing, compliance export
 - Python 3.10+
 - Zero mandatory dependencies (stdlib only)
 - Optional extras as listed above
+
+## Limitations
+
+diplomat-gate is a **syntactic** enforcement layer, not a semantic one. It checks exact matches, globs, amounts, and rate limits — it cannot detect intent or hallucinations. For semantic checks (intent classification, prompt injection detection), combine diplomat-gate with LLM-based guardrails.
+
+Key honest limits:
+- **Audit trail**: the SHA-256 hash chain detects accidental corruption and post-hoc edits. It does **not** protect against an attacker with write access to the `.db` file — `rebuild_chain()` can recreate a valid chain over tampered data. For strong tamper-evidence, ship audit records to a write-once store.
+- **Rate-limit accuracy under concurrency**: the current rate-limit implementation is not thread-safe. For concurrent workloads, use a single-process evaluation or wrap calls with a lock.
+- **Policy matching is deterministic**: policies are regex/glob based. A hallucinated recipient that doesn't match any pattern will not be blocked. Design your policies with the principle of least privilege (allowlist > blocklist).
+
+diplomat-gate is designed to be **one layer** in a defense-in-depth strategy, not a silver bullet.
 
 ## License
 
