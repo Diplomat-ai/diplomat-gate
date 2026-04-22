@@ -108,6 +108,8 @@ Python `dict` works out of the box. Adapters for popular SDKs are included.
 | OpenAI Agents SDK | ✓ built-in adapter | `from diplomat_gate.adapters.openai import filter_allowed` |
 | Any Python agent | ✓ dict API | if it calls an API, it can be gated |
 
+![diplomat-gate: one enforcement layer for four agent frameworks — LangChain, OpenClaw, browser-use and OpenAI Agents SDK converging onto diplomat-gate, which emits CONTINUE, REVIEW, or STOP verdicts](docs/images/multi-framework-compatibility.svg)
+
 Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent framework that exposes dict-like tool calls.
 
 ## What's new in 0.3.0
@@ -239,6 +241,32 @@ post-hoc row edits are detected by the verifier. Note that
 `rebuild_chain()` can recreate a valid chain over tampered data — an
 attacker with write access to the `.db` file is not stopped by the chain
 alone. For non-repudiation, ship records to a write-once store.
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor': '#FFFFFF',
+  'primaryTextColor': '#0F172A',
+  'primaryBorderColor': '#CBD5E1',
+  'lineColor': '#64748B',
+  'fontFamily': 'ui-sans-serif, system-ui, sans-serif'
+}}}%%
+flowchart LR
+    V1["Verdict N-1<br/><span style='color:#64748B;font-size:11px'>hash: abc…</span>"]
+    V2["Verdict N<br/><span style='color:#64748B;font-size:11px'>hash: SHA-256(canonical+prev)</span>"]
+    V3["Verdict N+1<br/><span style='color:#64748B;font-size:11px'>hash: def…</span>"]
+    DB[("SQLite<br/>audit.db")]
+
+    V1 -->|"prev_hash"| V2
+    V2 -->|"prev_hash"| V3
+    V1 & V2 & V3 --> DB
+    DB -->|"audit verify"| OK["✓ chain intact"]
+
+    style V1 fill:#F1F5F9,stroke:#CBD5E1,color:#0F172A
+    style V2 fill:#4F46E5,stroke:#312E81,color:#FFFFFF
+    style V3 fill:#F1F5F9,stroke:#CBD5E1,color:#0F172A
+    style DB fill:#F8FAFC,stroke:#94A3B8,color:#334155
+    style OK fill:#D1FAE5,stroke:#6EE7B7,color:#065F46
+```
 
 ```
 diplomat-gate audit verify        --db ./diplomat-audit.db
@@ -384,14 +412,41 @@ trail, real-time dashboard, managed approval routing, compliance export
 
 ## Limitations
 
-diplomat-gate is a **syntactic** enforcement layer, not a semantic one. It checks exact matches, globs, amounts, and rate limits — it cannot detect intent or hallucinations. For semantic checks (intent classification, prompt injection detection), combine diplomat-gate with LLM-based guardrails.
+diplomat-gate is a **syntactic** enforcement layer, not a semantic one. It is
+designed to be **one layer** in a defense-in-depth strategy, not a silver bullet.
 
-Key honest limits:
-- **Audit trail**: the SHA-256 hash chain detects accidental corruption and post-hoc edits. It does **not** protect against an attacker with write access to the `.db` file — `rebuild_chain()` can recreate a valid chain over tampered data. For strong tamper-evidence, ship audit records to a write-once store.
-- **Rate-limit accuracy under concurrency**: the current rate-limit implementation is not thread-safe. For concurrent workloads, use a single-process evaluation or wrap calls with a lock.
-- **Policy matching is deterministic**: policies are regex/glob based. A hallucinated recipient that doesn't match any pattern will not be blocked. Design your policies with the principle of least privilege (allowlist > blocklist).
+**What diplomat-gate does well**:
+- Exact-match, glob, regex, and amount-based policies on tool calls
+- Deterministic verdicts you can test and reason about
+- Hash-chained audit log resistant to accidental corruption
+- Framework-agnostic integration via `dict` or adapters
 
-diplomat-gate is designed to be **one layer** in a defense-in-depth strategy, not a silver bullet.
+**What diplomat-gate does *not* do**:
+- **Intent classification**: a hallucinated recipient that doesn't match any
+  policy pattern will not be blocked. Design policies with the principle of
+  least privilege (allowlist > blocklist when possible).
+- **Prompt injection detection**: diplomat-gate cannot read agent prompts,
+  only its tool calls. For prompt-level threats, combine with LLM-based
+  guardrails (e.g. Guardrails AI, NVIDIA NeMo).
+- **Strong tamper-evidence**: the SQLite hash chain detects accidental or
+  post-hoc edits. It does **not** protect against a local attacker with
+  write access — by design, `rebuild-chain` can recreate a valid chain for
+  legitimate recovery. For audit-grade logging, ship records to a write-once
+  external store.
+- **Multi-process rate-limit accuracy**: the current rate-limit and velocity
+  policies are accurate in single-process use. For multi-process workloads,
+  wrap evaluation with an external lock or use a distributed store.
+
+**When NOT to use diplomat-gate**:
+- If you need semantic understanding of tool call intent → use an LLM judge
+  alongside diplomat-gate.
+- If your threat model includes a privileged local attacker → diplomat-gate's
+  audit log alone is insufficient; combine with write-once external logging.
+- If you need fully distributed rate limiting across nodes → use a Redis- or
+  database-backed rate limiter.
+
+diplomat-gate is intentionally narrow. Use it for what it does well, compose
+it with complementary tools for what it doesn't.
 
 ## License
 
