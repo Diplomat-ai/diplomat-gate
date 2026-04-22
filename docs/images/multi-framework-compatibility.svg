@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="title desc">
+  <title id="title">diplomat-gate: one enforcement layer for four agent frameworks</title>
+  <desc id="desc">Flow diagram showing LangChain, OpenClaw, browser-use and OpenAI Agents SDK converging onto diplomat-gate, which emits CONTINUE, REVIEW, or STOP verdicts.</desc>
+  <rect x="0" y="0" width="1200" height="560" fill="#FFFFFF" />
+  <text x="40" y="50" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="start">YOUR AGENT FRAMEWORK</text>
+  <text x="600.0" y="50" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">ENFORCEMENT LAYER</text>
+  <text x="820" y="50" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="start">DETERMINISTIC VERDICT</text>
+  <rect x="40" y="80" width="280" height="80" rx="10" ry="10" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.5" />
+  <text x="60" y="112" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#0F172A" text-anchor="start">LangChain</text>
+  <text x="60" y="135" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#64748B" text-anchor="start">agents · tools</text>
+  <path d="M 320 120.0 C 400.0 120.0, 400.0 280.0, 480 280.0" fill="none" stroke="#FCA5A5" stroke-width="1.8" opacity="0.7" />
+  <rect x="40" y="190" width="280" height="80" rx="10" ry="10" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5" />
+  <text x="60" y="222" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#0F172A" text-anchor="start">OpenClaw</text>
+  <text x="60" y="245" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#64748B" text-anchor="start">340k+ stars</text>
+  <path d="M 320 230.0 C 400.0 230.0, 400.0 280.0, 480 280.0" fill="none" stroke="#FCD34D" stroke-width="1.8" opacity="0.7" />
+  <rect x="40" y="300" width="280" height="80" rx="10" ry="10" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1.5" />
+  <text x="60" y="332" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#0F172A" text-anchor="start">browser-use</text>
+  <text x="60" y="355" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#64748B" text-anchor="start">79k+ stars</text>
+  <path d="M 320 340.0 C 400.0 340.0, 400.0 280.0, 480 280.0" fill="none" stroke="#6EE7B7" stroke-width="1.8" opacity="0.7" />
+  <rect x="40" y="410" width="280" height="80" rx="10" ry="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5" />
+  <text x="60" y="442" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#0F172A" text-anchor="start">OpenAI Agents SDK</text>
+  <text x="60" y="465" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#64748B" text-anchor="start">19k+ stars</text>
+  <path d="M 320 450.0 C 400.0 450.0, 400.0 280.0, 480 280.0" fill="none" stroke="#93C5FD" stroke-width="1.8" opacity="0.7" />
+  <rect x="480" y="160" width="240" height="240" rx="12" ry="12" fill="#4F46E5" stroke="#312E81" stroke-width="2" />
+  <text x="600.0" y="240" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">diplomat-gate</text>
+  <text x="600.0" y="290" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#E0E7FF" text-anchor="middle">· deterministic</text>
+  <text x="600.0" y="318" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#E0E7FF" text-anchor="middle">· hash-chained audit</text>
+  <text x="600.0" y="346" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#E0E7FF" text-anchor="middle">· framework-agnostic</text>
+  <rect x="820" y="140" width="340" height="60" rx="10" ry="10" fill="#10B981" stroke="#047857" stroke-width="1.5" />
+  <text x="844" y="178" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">CONTINUE</text>
+  <path d="M 720 280.0 C 770.0 280.0, 770.0 170.0, 820 170.0" fill="none" stroke="#047857" stroke-width="2" opacity="0.8" />
+  <rect x="820" y="240" width="340" height="60" rx="10" ry="10" fill="#F59E0B" stroke="#B45309" stroke-width="1.5" />
+  <text x="844" y="278" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">REVIEW</text>
+  <path d="M 720 280.0 C 770.0 280.0, 770.0 270.0, 820 270.0" fill="none" stroke="#B45309" stroke-width="2" opacity="0.8" />
+  <rect x="820" y="340" width="340" height="60" rx="10" ry="10" fill="#EF4444" stroke="#991B1B" stroke-width="1.5" />
+  <text x="844" y="378" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">STOP</text>
+  <path d="M 720 280.0 C 770.0 280.0, 770.0 370.0, 820 370.0" fill="none" stroke="#991B1B" stroke-width="2" opacity="0.8" />
+  <text x="600.0" y="536" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#64748B" text-anchor="middle">One YAML policy file. One SQLite audit trail. Zero LLM calls.</text>
+</svg>

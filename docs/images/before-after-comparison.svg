@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="title desc">
+  <title id="title">diplomat-gate before and after: same agent, different outcome</title>
+  <desc id="desc">Side-by-side terminal comparison showing an agent calling send_email. Without diplomat-gate the email is sent without approval. With diplomat-gate the same action is blocked by a YAML policy before reaching SMTP.</desc>
+  <rect x="0" y="0" width="1200" height="560" fill="#FFFFFF" />
+  <text x="600.0" y="40" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="600" fill="#0F172A" text-anchor="middle">Same agent. Same scenario. One YAML policy apart.</text>
+  <text x="600.0" y="62" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#64748B" text-anchor="middle">Based on a publicly documented January 2026 incident.</text>
+  <text x="40" y="80" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#EF4444" text-anchor="start">WITHOUT diplomat-gate</text>
+  <text x="620" y="80" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#10B981" text-anchor="start">WITH diplomat-gate</text>
+  <rect x="40" y="90" width="540" height="400" rx="8" ry="8" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+  <path d="M 48 90 L 572 90 Q 580 90 580 98 L 580 126 L 40 126 L 40 98 Q 40 90 48 90 Z" fill="#1E293B" />
+  <circle cx="56" cy="108.0" r="5" fill="#EF4444" />
+  <circle cx="72" cy="108.0" r="5" fill="#F59E0B" />
+  <circle cx="88" cy="108.0" r="5" fill="#10B981" />
+  <text x="60" y="154" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="start">$ python agent.py</text>
+  <text x="60" y="176" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="60" y="198" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start"># OpenClaw agent, no policy layer</text>
+  <text x="60" y="220" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">agent.send_email(</text>
+  <text x="60" y="242" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  to='claims@lemonade.com',</text>
+  <text x="60" y="264" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  subject='Re: claim #12345',</text>
+  <text x="60" y="286" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  body='[legal rebuttal...]',</text>
+  <text x="60" y="308" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">)</text>
+  <text x="60" y="330" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="60" y="352" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start">→ SMTP connect...</text>
+  <text x="60" y="374" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start">→ 250 OK</text>
+  <text x="60" y="396" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#FCA5A5" text-anchor="start">✗ Email sent without user approval.</text>
+  <text x="60" y="418" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="60" y="440" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start" />
+  <rect x="620" y="90" width="540" height="400" rx="8" ry="8" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+  <path d="M 628 90 L 1152 90 Q 1160 90 1160 98 L 1160 126 L 620 126 L 620 98 Q 620 90 628 90 Z" fill="#1E293B" />
+  <circle cx="636" cy="108.0" r="5" fill="#EF4444" />
+  <circle cx="652" cy="108.0" r="5" fill="#F59E0B" />
+  <circle cx="668" cy="108.0" r="5" fill="#10B981" />
+  <text x="640" y="154" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="start">$ python agent.py</text>
+  <text x="640" y="176" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="640" y="198" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start"># Same agent, behind diplomat-gate</text>
+  <text x="640" y="220" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">gate = Gate.from_yaml('policies.yaml')</text>
+  <text x="640" y="242" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">verdict = gate.evaluate({</text>
+  <text x="640" y="264" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  'action': 'agent.send_email',</text>
+  <text x="640" y="286" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  'to': 'claims@lemonade.com',</text>
+  <text x="640" y="308" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">  ...</text>
+  <text x="640" y="330" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#E2E8F0" text-anchor="start">})</text>
+  <text x="640" y="352" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="640" y="374" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#FCD34D" text-anchor="start">▸ Verdict: STOP</text>
+  <text x="640" y="396" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#A5B4FC" text-anchor="start">  └─ email.domain_blocklist</text>
+  <text x="640" y="418" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#6EE7B7" text-anchor="start">✓ Blocked before reaching SMTP.</text>
+  <text x="640" y="440" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="13" font-weight="400" fill="#64748B" text-anchor="start" />
+  <text x="600.0" y="538" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#64748B" text-anchor="middle">Ten lines of YAML. Deterministic. Framework-agnostic. Hash-chained audit.</text>
+</svg>
