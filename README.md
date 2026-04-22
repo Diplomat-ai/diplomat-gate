@@ -349,6 +349,12 @@ Microbenchmarks (`python benchmarks/run.py`, dev laptop, 5 000 iters):
 | `multi_policy` (5)    | ~496 µs | ~958 µs | ~1564 µs | 2 000  |
 | `with_audit_sqlite`   | ~558 µs | ~625 µs | ~1925 µs | 1 800  |
 
+These numbers reflect measurements on a mid-range 2024 Windows laptop under
+typical dev load. Values vary significantly with system state (CPU load,
+SQLite WAL cache, temperature) — we've observed 1.5x to 4x variation on the
+same machine across sessions. The benchmarks are meant to show *order of
+magnitude*, not exact latencies.
+
 Audit numbers are dominated by `fsync`. The p99 long tail on `with_audit_sqlite`
 reflects SQLite fsync latency spikes — expect similar behavior on shared
 storage. Re-run `python benchmarks/run.py` on your hardware before quoting

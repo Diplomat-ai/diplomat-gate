@@ -72,6 +72,8 @@ files, and a full release validation pipeline.
 
 ## [0.2.0] — 2026-04-21
 
+> **Note**: this version was developed but never released publicly on PyPI or GitHub Releases. All 0.2.0 features are included in 0.3.0.
+
 Major hardening release. Core API is backward compatible with 0.1.x;
 audit log databases are auto-migrated on first open (a `UserWarning` is
 emitted). New optional features (review queue, adapters, CLI) are opt-in.
