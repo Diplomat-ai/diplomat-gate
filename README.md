@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
 [![Python](https://img.shields.io/pypi/pyversions/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
 [![License](https://img.shields.io/pypi/l/diplomat-gate)](https://github.com/Diplomat-ai/diplomat-gate/blob/main/LICENSE)
-[![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/smoke.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/smoke.yml)
+[![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml)
 
 > The enforcement layer for AI agents.
 >
