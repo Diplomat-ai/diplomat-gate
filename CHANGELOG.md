@@ -2,28 +2,73 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.0] — 2026-04-21
+## [Unreleased]
 
-Demo sprint: OpenClaw reproducible demo, rewritten HN-optimized README,
-multi-framework gallery, human conversion test protocol, and release
-validation pipeline.
+<!-- Collect changes for the next version here. -->
+
+## [0.3.0] — 2026-04-22
+
+Public launch release. Everything needed for a credible open-source project:
+HN-ready README, visual assets, honest performance claims, community health
+files, and a full release validation pipeline.
 
 ### Added
 
-- `demos/openclaw/` — 60-second self-contained demo reproducing the
-  publicly documented OpenClaw/Lemonade Insurance incident pattern.
-  `python demos/openclaw/run.py` — no API key, no Docker, no setup.
+- `docs/images/before-after-comparison.svg` — hero "before/after" diagram
+  showing the agent call path with and without diplomat-gate.
+- `docs/images/multi-framework-compatibility.svg` — framework convergence
+  diagram (OpenAI, Anthropic, LangChain all evaluated through one Gate).
+- `docs/images/generate_before_after.py`, `generate_multi_framework.py` —
+  reproducible SVG generators; `docs/images/README.md` explains regeneration.
+- Two Mermaid diagrams in `README.md`: enforcement flow (how the Gate
+  evaluates a tool call end-to-end) and audit hash-chain visualization.
 - `scripts/validate_release.py` — 11-step release gate (ruff, pytest,
-  benchmarks, build, twine, smoke install, CLI, demo).
+  benchmarks, build, twine, smoke install, CLI, demo). Exits 0 on full pass.
 - `tests/test_release_readiness.py` — release readiness test suite.
 - `.github/workflows/smoke.yml` — 12-combination OS × Python matrix.
+- `.github/workflows/ci.yml` — lint + test matrix with 80% coverage gate.
+- `.github/ISSUE_TEMPLATE/bug_report.yml` — structured bug report form with
+  component dropdown, version fields, minimal reproduction placeholder.
+- `.github/ISSUE_TEMPLATE/feature_request.yml` — feature request form with
+  domain dropdown, YAML config placeholder, "willing to PR?" field.
+- `.github/ISSUE_TEMPLATE/config.yml` — disables blank issues, links to
+  security advisory flow, docs, and discussions.
+- `.github/PULL_REQUEST_TEMPLATE.md` — PR checklist (pytest, ruff, examples,
+  benchmarks, CHANGELOG, security considerations).
+- `.github/ISSUES_TO_CREATE.md` — 5 good-first-issue drafts for post-launch:
+  Redis rate limiter, SemanticPolicy, S3 audit backend, Windows PYTHONUTF8
+  test fix, SARIF export.
+- `demos/openclaw/` — 60-second self-contained demo reproducing the
+  OpenClaw/Lemonade Insurance incident pattern. No API key, no Docker.
 - `docs/conversion-checklist.md` — human conversion test protocol.
 
 ### Changed
 
-- README rewritten for HN audience: demo above the fold, "The problem"
-  with aggregate scanner data, multi-framework compatibility table.
+- README: Limitations section expanded with explicit "diplomat-gate does well",
+  "diplomat-gate does NOT do", and "when NOT to use" subsections covering
+  syntactic-only evaluation, `rebuild_chain` threat model, and rate-limit
+  concurrency in multi-process deployments.
+- README: Performance table updated with values measured on current hardware
+  (`simple_allow` mean ~18 µs p95 ~31 µs; `multi_policy_5` mean ~496 µs
+  p95 ~958 µs; `with_audit_sqlite` mean ~558 µs p99 ~1925 µs with fsync
+  long-tail documented).
+- README: inline performance claim corrected to `~20 µs` / `~500 µs` to
+  match measured benchmarks.
+- `CONTRIBUTING.md` rewritten: before-contributing gate (issue-first workflow),
+  full venv setup instructions, ruff + validate_release steps, coding-style
+  constraints (no new deps, type hints, determinism), policy-writing checklist.
+- `SECURITY.md` rewritten: supported-versions table, expanded scope (incorrect
+  verdict, info disclosure), documented out-of-scope items matching README
+  Limitations, responsible-disclosure terms.
 - `_version.py` / `pyproject.toml` bumped to 0.3.0.
+
+### Fixed
+
+- Import sorting (`ruff I001`) and formatting in `docs/images/` generator
+  scripts.
+- Performance table benchmark drift (150–677% vs. measured values); table
+  now reflects real hardware timings with an fsync-induced p99 note.
+
 
 ## [0.2.0] — 2026-04-21
 
