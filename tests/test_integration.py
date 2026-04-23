@@ -24,6 +24,7 @@ from diplomat_gate.audit import verify_chain
 def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
     return subprocess.run(
         [sys.executable, "-m", "diplomat_gate.cli", *args],
         capture_output=True,

@@ -7,6 +7,7 @@ and run explicitly in CI via `pytest -m integration`.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -149,6 +150,7 @@ def test_cli_help_responds(repo_root):
         capture_output=True,
         text=True,
         timeout=10,
+        env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
     )
     assert result.returncode == 0, result.stderr
 
@@ -161,6 +163,7 @@ def test_cli_audit_verify_help(repo_root):
         capture_output=True,
         text=True,
         timeout=10,
+        env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
     )
     assert result.returncode == 0, result.stderr
 
@@ -186,6 +189,7 @@ def test_openclaw_demo_produces_markers(repo_root):
         timeout=30,
         capture_output=True,
         text=True,
+        env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
     )
     out = result.stdout
     assert "SCENARIO 1" in out, f"Missing SCENARIO 1 in output:\n{out}"
