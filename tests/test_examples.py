@@ -22,6 +22,7 @@ def test_example_runs(script: str, cwd_label: str) -> None:
     script_path = EXAMPLES_DIR / script if cwd_label == "repo_root" else Path(script)
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
     result = subprocess.run(
         [sys.executable, str(script_path)],
         cwd=str(cwd),
