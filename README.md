@@ -1,7 +1,7 @@
 # diplomat-gate
 
-[![Install from source](https://img.shields.io/badge/install-from%20source-orange)](https://github.com/Diplomat-ai/diplomat-gate)
-[![Python](https://img.shields.io/badge/python-3.10+-blue)](https://python.org)
+[![PyPI](https://img.shields.io/pypi/v/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
+[![Python](https://img.shields.io/pypi/pyversions/diplomat-gate)](https://pypi.org/project/diplomat-gate/)
 [![License](https://img.shields.io/pypi/l/diplomat-gate)](https://github.com/Diplomat-ai/diplomat-gate/blob/main/LICENSE)
 [![CI](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Diplomat-ai/diplomat-gate/actions/workflows/ci.yml)
 
@@ -19,11 +19,8 @@ Nothing in the framework stopped it.
 
 This is what happens without a deterministic policy layer. Here is the fix:
 
-```bash
-# Install from source (PyPI v0.3.0 publishing in progress)
-git clone https://github.com/Diplomat-ai/diplomat-gate.git
-cd diplomat-gate
-pip install -e ".[yaml]"
+```
+pip install "diplomat-gate[yaml]"
 ```
 
 ```yaml
@@ -376,13 +373,10 @@ publicly.
 | `[langchain]`| `langchain-core>=0.1`| optional, for typed adapter usage     |
 | `[all]`      | all of the above     | one-shot install                      |
 
-```bash
-# Install from source (PyPI v0.3.0 publishing in progress)
-git clone https://github.com/Diplomat-ai/diplomat-gate.git
-cd diplomat-gate
-pip install -e .            # core only
-pip install -e ".[yaml]"    # for YAML policy files
-pip install -e ".[all]"     # everything
+```
+pip install diplomat-gate          # core only
+pip install "diplomat-gate[yaml]"  # for YAML policy files
+pip install "diplomat-gate[all]"   # everything
 ```
 
 ## Examples
