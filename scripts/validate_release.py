@@ -50,10 +50,10 @@ def main() -> None:
     print(f"\n  diplomat-gate release validation\n  {'─' * 40}")
 
     steps: list[tuple[str, list[str]]] = [
-        ("1/11 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
-        ("2/11 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
+        ("1/13 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
+        ("2/13 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
         (
-            "3/11 pytest --cov",
+            "3/13 pytest --cov",
             [
                 PYTHON,
                 "-m",
@@ -65,11 +65,11 @@ def main() -> None:
             ],
         ),
         (
-            "4/11 pytest integration",
+            "4/13 pytest integration",
             [PYTHON, "-m", "pytest", "-m", "integration", "-q", "--tb=short"],
         ),
         (
-            "5/11 benchmarks p95<5ms",
+            "5/13 benchmarks p95<5ms",
             [
                 PYTHON,
                 "benchmarks/run.py",
@@ -79,8 +79,8 @@ def main() -> None:
                 "5.0",
             ],
         ),
-        ("6/11 build sdist+wheel", [PYTHON, "-m", "build"]),
-        ("7/11 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
+        ("6/13 build sdist+wheel", [PYTHON, "-m", "build"]),
+        ("7/13 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
     ]
 
     for step, cmd in steps:
@@ -89,10 +89,10 @@ def main() -> None:
 
     # Step 8 — fresh venv smoke install
     print(f"  {'─' * 40}")
-    print("  [8/11 fresh-venv smoke install]", flush=True)
+    print("  [8/13 fresh-venv smoke install]", flush=True)
     dist_wheels = sorted(REPO.glob("dist/*.whl"))
     if not dist_wheels:
-        print("  ✗ FAIL  [8/11] no wheel found in dist/")
+        print("  ✗ FAIL  [8/13] no wheel found in dist/")
         sys.exit(1)
     wheel = dist_wheels[-1]
     with tempfile.TemporaryDirectory() as tmp:
@@ -105,34 +105,45 @@ def main() -> None:
         venv_python = venv / ("Scripts" if sys.platform == "win32" else "bin") / "python"
         r2 = _run([str(venv_python), "-m", "pip", "install", str(wheel), "--quiet"])
         if r2.returncode != 0:
-            print("  ✗ FAIL  [8/11] pip install failed")
+            print("  ✗ FAIL  [8/13] pip install failed")
             lines = (r2.stderr or r2.stdout or "").splitlines()[:3]
             for ln in lines:
                 print(f"         {ln}")
             sys.exit(1)
-        print("  ✓ PASS  [8/11 fresh-venv smoke install]")
+        print("  ✓ PASS  [8/13 fresh-venv smoke install]")
 
         # Step 9 — diplomat-gate --help
         venv_bin = venv / ("Scripts" if sys.platform == "win32" else "bin")
         diplomat_cmd = venv_bin / (
             "diplomat-gate.exe" if sys.platform == "win32" else "diplomat-gate"
         )
-        if not _check("9/11 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
+        if not _check("9/13 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
             sys.exit(1)
 
         # Step 10 — audit verify --help
         if not _check(
-            "10/11 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
+            "10/13 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
+        ):
+            sys.exit(1)
+
+        # Step 10bis — validate --help
+        if not _check("10bis/13 validate --help", [str(diplomat_cmd), "validate", "--help"]):
+            sys.exit(1)
+
+        # Step 10ter — validate gate.yaml.example
+        if not _check(
+            "10ter/13 validate gate.yaml.example",
+            [str(diplomat_cmd), "validate", str(REPO / "gate.yaml.example")],
         ):
             sys.exit(1)
 
     # Step 11 — demo --ci
     demo_path = REPO / "demos" / "openclaw" / "run.py"
     if demo_path.exists():
-        if not _check("11/11 demo --ci", [PYTHON, str(demo_path), "--ci"]):
+        if not _check("11/13 demo --ci", [PYTHON, str(demo_path), "--ci"]):
             sys.exit(1)
     else:
-        print("  ⚠ SKIP  [11/11 demo --ci] demos/openclaw/run.py not yet created (Phase 2)")
+        print("  ⚠ SKIP  [11/13 demo --ci] demos/openclaw/run.py not yet created (Phase 2)")
 
     print(f"\n  {'─' * 40}")
     print("  All checks passed. Ready to release.\n")
