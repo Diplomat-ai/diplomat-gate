@@ -649,13 +649,10 @@ def format_report_text(report: ValidationReport, *, use_color: bool) -> str:
     n_warn = len(report.warnings)
 
     if not report.ok:
-        header = (
-            f"{red}INVALID{reset}: {n_pol} policies loaded, {n_err} error(s), {n_warn} warning(s)"
-        )
+        header = f"{red}INVALID{reset}: {n_pol} policies loaded, {n_err} errors, {n_warn} warnings"
     elif n_warn > 0:
         header = (
-            f"{yellow}OK with warnings{reset}: {n_pol} policies loaded, "
-            f"0 errors, {n_warn} warning(s)"
+            f"{yellow}OK with warnings{reset}: {n_pol} policies loaded, 0 errors, {n_warn} warnings"
         )
     else:
         header = f"{green}OK{reset}: {n_pol} policies loaded, 0 errors, 0 warnings"

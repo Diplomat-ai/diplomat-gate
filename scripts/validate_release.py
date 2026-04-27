@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release validation gate — 11 checks, stop at first failure.
+"""Release validation gate — 13 steps, stop at first failure.
 
 Usage:
     python scripts/validate_release.py
@@ -100,7 +100,7 @@ def main() -> None:
         venv = tmp_path / "venv"
         r1 = _run([PYTHON, "-m", "venv", str(venv)])
         if r1.returncode != 0:
-            print("  ✗ FAIL  [8/11] venv creation failed")
+            print("  ✗ FAIL  [8/13] venv creation failed")
             sys.exit(1)
         venv_python = venv / ("Scripts" if sys.platform == "win32" else "bin") / "python"
         r2 = _run([str(venv_python), "-m", "pip", "install", str(wheel), "--quiet"])
