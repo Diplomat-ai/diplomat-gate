@@ -2,7 +2,7 @@
 
 import pytest
 
-from diplomat_gate.policies import load_from_dict
+from diplomat_gate.policies import iter_registered_policies, load_from_dict
 from diplomat_gate.policies.emails import DomainBlocklistPolicy
 from diplomat_gate.policies.payments import AmountLimitPolicy, VelocityPolicy
 
@@ -59,3 +59,21 @@ class TestLoadFromDict:
         assert isinstance(policies[0], VelocityPolicy)
         assert policies[0].window == "30m"
         assert policies[0].max_txn == 5
+
+
+class TestIterRegisteredPolicies:
+    def test_returns_all_nine_policies(self):
+        registry = iter_registered_policies()
+        assert len(registry) == 9
+
+    def test_iter_registered_policies_is_a_copy(self):
+        registry = iter_registered_policies()
+        original_len = len(registry)
+        registry["fake.policy"] = object  # type: ignore[assignment]
+        # Mutation of the returned dict must not affect the internal registry
+        assert len(iter_registered_policies()) == original_len
+
+    def test_contains_expected_ids(self):
+        registry = iter_registered_policies()
+        assert "payment.amount_limit" in registry
+        assert "email.domain_blocklist" in registry
