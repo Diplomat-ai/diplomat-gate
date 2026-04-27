@@ -1,0 +1,5 @@
+payment:
+  - id: payment.amount_limit
+    max_amount: 1000
+    severity: high
+    on_fail: STOP

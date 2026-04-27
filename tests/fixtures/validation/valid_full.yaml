@@ -1,0 +1,55 @@
+# diplomat-gate policy file — https://github.com/Diplomat-ai/diplomat-gate
+version: "1"
+
+audit:
+  enabled: true
+  path: "./diplomat-audit.db"
+
+payment:
+  - id: payment.amount_limit
+    max_amount: 10000
+    severity: critical
+    on_fail: STOP
+
+  - id: payment.velocity
+    max_txn: 20
+    window: 1h
+    severity: high
+    on_fail: STOP
+
+  - id: payment.duplicate_detection
+    window: 5m
+    severity: high
+    on_fail: REVIEW
+
+  - id: payment.recipient_blocklist
+    blocked:
+      - "acct_blacklisted_*"
+    severity: critical
+    on_fail: STOP
+
+email:
+  - id: email.domain_blocklist
+    blocked:
+      - "*.banque-*.fr"
+      - "*.gouv.fr"
+    severity: critical
+    on_fail: STOP
+
+  - id: email.rate_limit
+    max: 50
+    window: 1h
+    severity: high
+    on_fail: STOP
+
+  - id: email.business_hours
+    start: 9
+    end: 18
+    tz: Europe/Paris
+    severity: medium
+    on_fail: REVIEW
+
+  - id: email.content_scan
+    patterns: [credit_card, ssn, api_key, private_key]
+    severity: critical
+    on_fail: STOP

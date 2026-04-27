@@ -1,0 +1,3 @@
+payment:
+  - max_amount: 1000
+    severity: high

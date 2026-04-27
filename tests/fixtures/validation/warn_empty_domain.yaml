@@ -1,0 +1,4 @@
+payment: []
+email:
+  - id: email.domain_blocklist
+    blocked: ["*.evil.com"]
