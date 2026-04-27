@@ -1,0 +1,3 @@
+payment:
+  - id: payment.amount_limit
+    max_amount: "ten thousand"

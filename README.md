@@ -233,6 +233,24 @@ charge(amount=50_000, customer_id="cus_123")       # STOP    -> raises Blocked
 - **REVIEW**: raises `NeedsReview`; if `review_queue` is enabled, the
   call is also persisted for an operator to approve/reject.
 
+## Validate your gate.yaml
+
+Catch typos and misconfigured policies before deployment:
+
+```bash
+diplomat-gate validate gate.yaml
+# OK: 8 policies loaded, 0 errors, 0 warnings
+```
+
+Use `--json` for CI integration:
+
+```bash
+diplomat-gate validate gate.yaml --json --output report.json --quiet
+echo $?  # 0 if valid, 1 if errors, 2 if I/O error
+```
+
+See [docs/cli.md](docs/cli.md) for full flag reference and the JSON schema.
+
 ## Audit trail
 
 Every verdict is recorded in an append-only SQLite log with a SHA-256

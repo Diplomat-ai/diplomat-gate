@@ -1,0 +1,5 @@
+policies:
+  - id: payment.amount_limit
+    max_amount: 1000
+  - id: email.domain_blocklist
+    blocked: ["*.evil.com"]

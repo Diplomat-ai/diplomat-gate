@@ -1,0 +1,3 @@
+payment:
+  - id: payment.amout_limit
+    max_amount: 1000

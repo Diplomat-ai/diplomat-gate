@@ -4,7 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-<!-- Collect changes for the next version here. -->
+### Added
+
+- `diplomat-gate validate <gate.yaml>` CLI subcommand — validates a gate.yaml
+  file without instantiating a Gate or executing any policies. Reports errors
+  (unknown policy ids, type mismatches, bad severity/on_fail values) and
+  warnings (unknown fields with difflib suggestions, empty domains, default
+  critical fields). Exit 0 if valid, 1 if errors, 2 if I/O error.
+- `src/diplomat_gate/validation.py` — pure validation module with stable JSON
+  output schema (`format_version: "1"`). Types: `Issue`, `ValidationReport`.
+  Public API: `validate_config()`, `report_to_dict()`, `format_report_text()`.
+- `iter_registered_policies()` in `diplomat_gate.policies.loader` — returns a
+  copy of the internal policy registry for read-only inspection.
+- `tests/test_validation.py` — unit tests for the validation module.
+- `tests/test_cli_validate.py` — integration tests (`@pytest.mark.integration`)
+  for the `diplomat-gate validate` CLI command.
+- `tests/fixtures/validation/` — 13 YAML fixtures covering valid configs,
+  error cases, and warning cases.
+- `examples/09_validate_in_ci.py` — demonstrates programmatic use of
+  `validate_config()` in a CI script.
+- `docs/cli.md` — full CLI reference for `validate`, `audit`, and `review`.
+- `scripts/validate_release.py` updated: added steps 10bis (validate --help)
+  and 10ter (validate gate.yaml.example); renumbered all steps to X/13.
 
 ## [0.3.0] — 2026-04-22
 

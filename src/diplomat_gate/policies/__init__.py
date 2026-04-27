@@ -5,7 +5,7 @@ from .emails import (
     DomainBlocklistPolicy,
     EmailRateLimitPolicy,
 )
-from .loader import load_from_dict, load_from_yaml
+from .loader import iter_registered_policies, load_from_dict, load_from_yaml
 from .payments import (
     AmountLimitPolicy,
     DailyLimitPolicy,
@@ -27,4 +27,5 @@ __all__ = [
     "ContentScanPolicy",
     "load_from_dict",
     "load_from_yaml",
+    "iter_registered_policies",
 ]

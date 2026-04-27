@@ -79,3 +79,12 @@ def load_from_yaml(path: str) -> list[Policy]:
     with open(path) as f:
         config = yaml.safe_load(f)
     return load_from_dict(config)
+
+
+def iter_registered_policies() -> dict[str, type[Policy]]:
+    """Return a copy of the policy registry.
+
+    Read-only — mutations on the returned dict have no effect on the
+    internal registry. Used by ``diplomat_gate.validation``.
+    """
+    return dict(_POLICY_MAP)

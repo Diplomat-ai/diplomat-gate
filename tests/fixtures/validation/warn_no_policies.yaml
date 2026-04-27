@@ -1,0 +1,3 @@
+audit:
+  enabled: true
+  path: ./diplomat-audit.db

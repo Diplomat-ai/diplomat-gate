@@ -1,0 +1,4 @@
+payment:
+  - id: payment.amount_limit
+    severity: critical
+    on_fail: STOP

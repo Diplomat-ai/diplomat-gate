@@ -1,0 +1,4 @@
+payment:
+  - id: payment.amount_limit
+    max_amount: 1000
+    on_fail: BLOCK
