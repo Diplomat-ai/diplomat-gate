@@ -1,6 +1,6 @@
 """Command-line interface for diplomat-gate.
 
-Currently exposes ``audit`` and ``review`` subcommands:
+Currently exposes ``audit``, ``review``, and ``validate`` subcommands:
 
 * ``diplomat-gate audit verify --db <path>``
 * ``diplomat-gate audit rebuild-chain --db <path>``
@@ -8,10 +8,12 @@ Currently exposes ``audit`` and ``review`` subcommands:
 * ``diplomat-gate review show --db <path> --id <item_id>``
 * ``diplomat-gate review approve --db <path> --id <item_id> --reviewer <name> [--note ...]``
 * ``diplomat-gate review reject --db <path> --id <item_id> --reviewer <name> [--note ...]``
+* ``diplomat-gate [--no-color] validate <config_path> [--json] [--output FILE] [--quiet]``
 
 Exit codes:
     0 — operation succeeded
-    1 — chain is invalid (audit verify only) or item not found (review)
+    1 — chain is invalid (audit verify only), item not found (review),
+        or validation errors present (validate)
     2 — usage / IO error
 """
 
@@ -96,6 +98,25 @@ def _build_parser() -> argparse.ArgumentParser:
     rr.add_argument("--reviewer", required=True)
     rr.add_argument("--note", default="")
 
+    val = sub.add_parser("validate", help="Validate a gate.yaml configuration file.")
+    val.add_argument("config_path", help="Path to the gate.yaml file to validate.")
+    val.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit machine-readable JSON on stdout instead of human text.",
+    )
+    val.add_argument(
+        "--output",
+        default=None,
+        metavar="FILE",
+        help="Write the JSON report to FILE (a short summary still goes to stdout).",
+    )
+    val.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress stdout. Exit code is preserved.",
+    )
+
     return parser
 
 
@@ -152,6 +173,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         finally:
             queue.close()
 
+    if args.cmd == "validate":
+        return _handle_validate(args, use_color=use_color)
+
     parser.print_help(sys.stderr)
     return 2
 
@@ -192,6 +216,38 @@ def _handle_review(args, queue: ReviewQueue) -> int:
         return 0
 
     return 2
+
+
+def _handle_validate(args, *, use_color: bool) -> int:
+    from .validation import (  # noqa: PLC0415
+        format_report_text,
+        report_to_dict,
+        validate_config,
+    )
+
+    try:
+        report = validate_config(args.config_path)
+    except FileNotFoundError:
+        print(f"error: file not found: {args.config_path}", file=sys.stderr)
+        return 2
+    except ImportError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    except (ValueError, OSError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(report_to_dict(report), f, indent=2, sort_keys=False)
+
+    if not args.quiet:
+        if args.json:
+            print(json.dumps(report_to_dict(report), indent=2, sort_keys=False))
+        else:
+            print(format_report_text(report, use_color=use_color))
+
+    return 0 if report.ok else 1
 
 
 if __name__ == "__main__":  # pragma: no cover
