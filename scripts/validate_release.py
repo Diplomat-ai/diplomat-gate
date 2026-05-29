@@ -80,9 +80,7 @@ def _surface_check() -> bool:
 
         with pyproject_path.open("rb") as f:
             data = tomllib.load(f)
-        declared_extras = set(
-            data.get("project", {}).get("optional-dependencies", {}).keys()
-        )
+        declared_extras = set(data.get("project", {}).get("optional-dependencies", {}).keys())
     except ImportError:
         # Python 3.10 fallback: best-effort regex parse of the section.
         section = re.search(
@@ -109,9 +107,7 @@ def _surface_check() -> bool:
         for m in re.finditer(r"```yaml\n(.*?)```", readme, re.DOTALL):
             block = m.group(1)
             head = [
-                ln
-                for ln in block.splitlines()
-                if ln.strip() and not ln.lstrip().startswith("#")
+                ln for ln in block.splitlines() if ln.strip() and not ln.lstrip().startswith("#")
             ][:2]
             if any("version:" in ln for ln in head):
                 try:
@@ -122,9 +118,7 @@ def _surface_check() -> bool:
     # Check D — every '<N>-step' mention in README must equal TOTAL_STEPS.
     step_counts = set(int(m) for m in re.findall(r"(\d+)-step", readme))
     if not step_counts:
-        failures.append(
-            f"D: README mentions no '<N>-step' value; script declares {TOTAL_STEPS}"
-        )
+        failures.append(f"D: README mentions no '<N>-step' value; script declares {TOTAL_STEPS}")
     elif step_counts != {TOTAL_STEPS}:
         failures.append(
             f"D: README mentions {sorted(step_counts)} '-step' value(s); script declares {TOTAL_STEPS}"
