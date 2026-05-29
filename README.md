@@ -436,6 +436,17 @@ trail, real-time dashboard, managed approval routing, compliance export
 - Zero mandatory dependencies (stdlib only)
 - Optional extras as listed above
 
+## How this was built
+
+diplomat-gate is solo-maintained and AI-assisted: a large share of the commits
+are authored by me but committed through an AI coding agent. What matters for a
+security tool is not who typed the lines but whether the behavior is verifiable.
+The credibility anchors are the ones you can check yourself: 146 tests, an
+11-step release gate (`scripts/validate_release.py`), a green CI matrix across
+Python 3.10–3.13 on Linux / Windows / macOS, and runnable examples that need no
+API key. Run `python -m pytest tests/ -v` and `python benchmarks/run.py` and
+judge the tool on its output.
+
 ## Limitations
 
 diplomat-gate is a **syntactic** enforcement layer, not a semantic one. It is

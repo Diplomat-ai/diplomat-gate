@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Repository hygiene: added `.github/dependabot.yml` (monthly pip + github-actions),
+  `.editorconfig`, moved pre-launch notes to `docs/internal/`.
 - `diplomat-gate validate <gate.yaml>` CLI subcommand — validates a gate.yaml
   file without instantiating a Gate or executing any policies. Reports errors
   (unknown policy ids, type mismatches, bad severity/on_fail values) and
@@ -56,7 +58,7 @@ files, and a full release validation pipeline.
   security advisory flow, docs, and discussions.
 - `.github/PULL_REQUEST_TEMPLATE.md` — PR checklist (pytest, ruff, examples,
   benchmarks, CHANGELOG, security considerations).
-- `.github/ISSUES_TO_CREATE.md` — 5 good-first-issue drafts for post-launch:
+- `docs/internal/ISSUES_TO_CREATE.md` — 5 good-first-issue drafts for post-launch:
   Redis rate limiter, SemanticPolicy, S3 audit backend, Windows PYTHONUTF8
   test fix, SARIF export.
 - `demos/openclaw/` — 60-second self-contained demo reproducing the

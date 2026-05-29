@@ -79,7 +79,7 @@ Ready for open-source contributors:
 
 ### 5 good-first-issues ready to post
 
-See `.github/ISSUES_TO_CREATE.md` for ready-to-post drafts:
+See `docs/internal/ISSUES_TO_CREATE.md` for ready-to-post drafts:
 
 1. Redis-backed rate limiter (multi-worker correctness)
 2. SemanticPolicy base class (optional LLM judge)
