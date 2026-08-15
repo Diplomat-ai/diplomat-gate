@@ -360,6 +360,101 @@ class TestMigration:
         assert result.records_checked == 2
 
 
+class TestExport:
+    def _seed(self, db: str) -> None:
+        from diplomat_gate.audit import AuditLog
+        from diplomat_gate.models import (
+            Decision,
+            ToolCall,
+            Verdict,
+            Violation,
+            _make_receipt,
+        )
+
+        audit = AuditLog(db, redact_violations=False)
+        try:
+            tc1 = ToolCall(action="charge_card", params={"amount": 50})
+            receipt1 = _make_receipt(tc1, Decision.CONTINUE, [], 1)
+            audit.record(
+                Verdict(
+                    decision=Decision.CONTINUE,
+                    violations=[],
+                    receipt=receipt1,
+                    latency_ms=0.1,
+                    tool_call=tc1,
+                )
+            )
+
+            violation = Violation(
+                policy_id="payment.amount_limit",
+                policy_name="Payment Amount Limit",
+                severity="critical",
+                message="amount exceeds limit",
+            )
+            tc2 = ToolCall(action="charge_card", params={"amount": 5000})
+            receipt2 = _make_receipt(tc2, Decision.STOP, [violation], 1)
+            audit.record(
+                Verdict(
+                    decision=Decision.STOP,
+                    violations=[violation],
+                    receipt=receipt2,
+                    latency_ms=0.2,
+                    tool_call=tc2,
+                )
+            )
+        finally:
+            audit.close()
+
+    def test_export_records_reads_in_sequence_order(self, tmp_path):
+        from diplomat_gate.audit import export_records
+
+        db = str(tmp_path / "export.db")
+        self._seed(db)
+        records = export_records(db)
+        assert [r["sequence"] for r in records] == [1, 2]
+        assert records[1]["decision"] == "STOP"
+        assert records[1]["violations"][0]["policy_id"] == "payment.amount_limit"
+
+    def test_to_sarif_skips_continue_and_maps_stop_to_error(self, tmp_path):
+        from diplomat_gate.audit import export_records, to_sarif
+
+        db = str(tmp_path / "export.db")
+        self._seed(db)
+        sarif = to_sarif(export_records(db))
+        assert sarif["version"] == "2.1.0"
+        results = sarif["runs"][0]["results"]
+        assert len(results) == 1
+        assert results[0]["ruleId"] == "payment.amount_limit"
+        assert results[0]["level"] == "error"
+        assert results[0]["message"]["text"] == "amount exceeds limit"
+        rule_ids = {rule["id"] for rule in sarif["runs"][0]["tool"]["driver"]["rules"]}
+        assert rule_ids == {"payment.amount_limit"}
+
+    def test_to_jsonl_emits_one_record_per_line(self, tmp_path):
+        import json
+
+        from diplomat_gate.audit import export_records, to_jsonl
+
+        db = str(tmp_path / "export.db")
+        self._seed(db)
+        lines = to_jsonl(export_records(db)).splitlines()
+        assert len(lines) == 2
+        assert json.loads(lines[0])["sequence"] == 1
+        assert json.loads(lines[1])["sequence"] == 2
+
+    def test_export_records_since_until_filters(self, tmp_path):
+        from diplomat_gate.audit import export_records
+
+        db = str(tmp_path / "export.db")
+        self._seed(db)
+        all_records = export_records(db)
+        far_future = "9999-01-01T00:00:00"
+        assert export_records(db, since=far_future) == []
+        far_past = "0001-01-01T00:00:00"
+        assert export_records(db, until=far_past) == []
+        assert export_records(db, since=far_past, until=far_future) == all_records
+
+
 class TestCLI:
     def test_verify_ok(self, tmp_path, capsys):
         from diplomat_gate.cli import main
@@ -372,6 +467,53 @@ class TestCLI:
         out = capsys.readouterr().out
         assert rc == 0
         assert "OK" in out
+
+    def test_export_sarif(self, tmp_path, capsys):
+        import json
+
+        from diplomat_gate.cli import main
+
+        db = str(tmp_path / "export.db")
+        g = _make_gate(db)
+        g.evaluate({"action": "charge_card", "amount": 5000})
+        g.close()
+        rc = main(["--no-color", "audit", "export", "--db", db, "--format", "sarif"])
+        out = capsys.readouterr().out
+        assert rc == 0
+        sarif = json.loads(out)
+        assert sarif["version"] == "2.1.0"
+        assert sarif["runs"][0]["results"][0]["ruleId"] == "payment.amount_limit"
+
+    def test_export_json_defaults_and_since_filter(self, tmp_path, capsys):
+        import json
+
+        from diplomat_gate.cli import main
+
+        db = str(tmp_path / "export.db")
+        g = _make_gate(db)
+        g.evaluate({"action": "charge_card", "amount": 100})
+        g.close()
+        rc = main(["--no-color", "audit", "export", "--db", db, "--format", "json"])
+        out = capsys.readouterr().out
+        assert rc == 0
+        assert json.loads(out.strip())["sequence"] == 1
+
+        rc = main(
+            [
+                "--no-color",
+                "audit",
+                "export",
+                "--db",
+                db,
+                "--format",
+                "json",
+                "--since",
+                "9999-01-01T00:00:00",
+            ]
+        )
+        out = capsys.readouterr().out
+        assert rc == 0
+        assert out.strip() == ""
 
     def test_verify_invalid(self, tmp_path, capsys):
         import sqlite3

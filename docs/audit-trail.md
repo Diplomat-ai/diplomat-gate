@@ -132,3 +132,26 @@ Detected:
 
 The audit log is **defense in depth, not a notary**. Pair it with an
 external archival mechanism if you need non-repudiation.
+
+## Exporting the audit trail
+
+```bash
+diplomat-gate audit export --db ./diplomat-audit.db --format sarif > results.sarif
+diplomat-gate audit export --db ./diplomat-audit.db --format json > records.jsonl
+diplomat-gate audit export --db ./diplomat-audit.db --since 2024-01-01T00:00:00 --until 2024-02-01T00:00:00
+```
+
+`--format sarif` (the default) emits a [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)
+document. Each `STOP` violation becomes a SARIF `error` result and each
+`REVIEW` violation becomes a `warning`; `CONTINUE` records contribute
+nothing, since there is nothing to flag. `ruleId` is the policy id, so
+results group naturally by policy in any SARIF viewer, including GitHub
+Advanced Security's Code Scanning tab. Results carry no `locations` —
+these are runtime policy verdicts, not findings tied to a source file,
+and a synthetic file path would misrepresent that rather than clarify it.
+
+`--format json` emits newline-delimited JSON (one verdict record per
+line), for tooling that wants the raw fields rather than the SARIF shape.
+
+`--since` / `--until` filter by the verdict's `timestamp`, ISO-8601,
+inclusive on both ends. Omit either bound to leave that side open.

@@ -432,3 +432,133 @@ def rebuild_chain(db_path: str) -> int:
         return len(rows)
     finally:
         conn.close()
+
+
+# ----------------------------------------------------------------------
+# export (SARIF / JSONL)
+# ----------------------------------------------------------------------
+
+
+def export_records(
+    db_path: str,
+    *,
+    since: str | None = None,
+    until: str | None = None,
+) -> list[dict[str, Any]]:
+    """Read verdict records for export, ordered by sequence, optionally
+    filtered to an ISO-8601 timestamp range (inclusive on both ends)."""
+    conn = sqlite3.connect(db_path)
+    try:
+        sql = (
+            "SELECT verdict_id, sequence, timestamp, agent_id, action, "
+            "params_hash, decision, policies_evaluated, policies_failed, "
+            "violations, latency_ms FROM verdicts"
+        )
+        clauses: list[str] = []
+        params: list[Any] = []
+        if since:
+            clauses.append("timestamp >= ?")
+            params.append(since)
+        if until:
+            clauses.append("timestamp <= ?")
+            params.append(until)
+        if clauses:
+            sql += " WHERE " + " AND ".join(clauses)
+        sql += " ORDER BY sequence ASC"
+        rows = conn.execute(sql, params).fetchall()
+    finally:
+        conn.close()
+
+    records: list[dict[str, Any]] = []
+    for row in rows:
+        (
+            verdict_id,
+            sequence,
+            timestamp,
+            agent_id,
+            action,
+            params_hash,
+            decision,
+            p_eval,
+            p_fail,
+            violations_json,
+            latency_ms,
+        ) = row
+        records.append(
+            {
+                "verdict_id": verdict_id,
+                "sequence": int(sequence),
+                "timestamp": timestamp,
+                "agent_id": agent_id,
+                "action": action,
+                "params_hash": params_hash,
+                "decision": decision,
+                "policies_evaluated": int(p_eval),
+                "policies_failed": int(p_fail),
+                "violations": json.loads(violations_json),
+                "latency_ms": float(latency_ms),
+            }
+        )
+    return records
+
+
+def to_jsonl(records: list[dict[str, Any]]) -> str:
+    """Render export records as newline-delimited JSON, one record per line."""
+    return "\n".join(json.dumps(r, sort_keys=True, default=str) for r in records)
+
+
+_SARIF_LEVEL = {"STOP": "error", "REVIEW": "warning"}
+
+
+def to_sarif(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Render export records as a SARIF 2.1.0 log.
+
+    Each STOP/REVIEW violation becomes one SARIF result; ALLOW records
+    contribute no results, since there is nothing to flag. Results carry
+    no ``locations``: these are runtime policy verdicts, not findings tied
+    to a source file, and a synthetic file location would misrepresent
+    that rather than clarify it.
+    """
+    results: list[dict[str, Any]] = []
+    rule_ids: dict[str, None] = {}
+    for record in records:
+        level = _SARIF_LEVEL.get(record["decision"])
+        if level is None:
+            continue
+        for violation in record["violations"]:
+            policy_id = violation.get("policy_id", "unknown")
+            rule_ids[policy_id] = None
+            results.append(
+                {
+                    "ruleId": policy_id,
+                    "level": level,
+                    "message": {"text": violation.get("message", "")},
+                    "properties": {
+                        "verdictId": record["verdict_id"],
+                        "sequence": record["sequence"],
+                        "timestamp": record["timestamp"],
+                        "agentId": record["agent_id"],
+                        "action": record["action"],
+                    },
+                }
+            )
+
+    return {
+        "version": "2.1.0",
+        "$schema": (
+            "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/"
+            "Schemata/sarif-schema-2.1.0.json"
+        ),
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "diplomat-gate",
+                        "informationUri": "https://github.com/Diplomat-ai/diplomat-gate",
+                        "rules": [{"id": rule_id} for rule_id in rule_ids],
+                    }
+                },
+                "results": results,
+            }
+        ],
+    }
