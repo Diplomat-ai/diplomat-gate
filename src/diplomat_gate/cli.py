@@ -4,6 +4,7 @@ Currently exposes ``audit``, ``review``, and ``validate`` subcommands:
 
 * ``diplomat-gate audit verify --db <path>``
 * ``diplomat-gate audit rebuild-chain --db <path>``
+* ``diplomat-gate audit export --db <path> [--format sarif|json] [--since ISO8601] [--until ISO8601]``
 * ``diplomat-gate review list --db <path> [--status pending] [--limit 50]``
 * ``diplomat-gate review show --db <path> --id <item_id>``
 * ``diplomat-gate review approve --db <path> --id <item_id> --reviewer <name> [--note ...]``
@@ -24,7 +25,7 @@ import json
 import sys
 from collections.abc import Sequence
 
-from .audit import rebuild_chain, verify_chain
+from .audit import export_records, rebuild_chain, to_jsonl, to_sarif, verify_chain
 from .review import ReviewQueue, ReviewQueueError
 
 
@@ -65,6 +66,19 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Recompute sequence/previous_hash/record_hash for every row.",
     )
     rebuild.add_argument("--db", required=True, help="Path to the SQLite audit database.")
+
+    export = audit_sub.add_parser(
+        "export", help="Export verdict records as SARIF or newline-delimited JSON."
+    )
+    export.add_argument("--db", required=True, help="Path to the SQLite audit database.")
+    export.add_argument(
+        "--format",
+        choices=["sarif", "json"],
+        default="sarif",
+        help="Output format (default: sarif).",
+    )
+    export.add_argument("--since", default=None, help="ISO-8601 timestamp lower bound (inclusive).")
+    export.add_argument("--until", default=None, help="ISO-8601 timestamp upper bound (inclusive).")
 
     review = sub.add_parser("review", help="Review queue operations.")
     review_sub = review.add_subparsers(dest="review_cmd", required=True)
@@ -160,6 +174,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"error: {exc}", file=sys.stderr)
             return 2
         print(f"rebuilt chain: {n} record(s) rewritten")
+        return 0
+
+    if args.cmd == "audit" and args.audit_cmd == "export":
+        try:
+            records = export_records(args.db, since=args.since, until=args.until)
+        except Exception as exc:  # noqa: BLE001 - CLI surface
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        if args.format == "sarif":
+            print(json.dumps(to_sarif(records), indent=2, sort_keys=False))
+        else:
+            print(to_jsonl(records))
         return 0
 
     if args.cmd == "review":
