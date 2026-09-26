@@ -205,7 +205,7 @@ def main() -> None:
             print("  ✗ FAIL  [8/14] venv creation failed")
             sys.exit(1)
         venv_python = venv / ("Scripts" if sys.platform == "win32" else "bin") / "python"
-        r2 = _run([str(venv_python), "-m", "pip", "install", str(wheel), "--quiet"])
+        r2 = _run([str(venv_python), "-m", "pip", "install", f"{wheel}[yaml]", "--quiet"])
         if r2.returncode != 0:
             print("  ✗ FAIL  [8/14] pip install failed")
             lines = (r2.stderr or r2.stdout or "").splitlines()[:3]
