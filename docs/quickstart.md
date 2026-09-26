@@ -53,11 +53,13 @@ from diplomat_gate import Gate
 
 gate = Gate.from_yaml("gate.yaml")
 
-verdict = gate.evaluate({
-    "action": "charge_card",
-    "amount": 200,
-    "agent_id": "checkout-bot",
-})
+verdict = gate.evaluate(
+    {
+        "action": "charge_card",
+        "amount": 200,
+        "agent_id": "checkout-bot",
+    }
+)
 if verdict.decision.value == "STOP":
     raise RuntimeError("blocked: " + ", ".join(v.policy_id for v in verdict.violations))
 ```
@@ -69,16 +71,18 @@ from diplomat_gate import Gate, configure, gate, Blocked, NeedsReview
 
 configure(Gate.from_yaml("gate.yaml"))
 
+
 @gate(action="charge_card")
 def charge(amount: int, customer_id: str) -> dict:
     return stripe.charges.create(amount=amount, customer=customer_id)
+
 
 try:
     charge(amount=5000, customer_id="cus_x")
 except Blocked as e:
     handle_block(e.verdict)
 except NeedsReview as e:
-    handle_review(e.verdict)        # already enqueued in diplomat-review.db
+    handle_review(e.verdict)  # already enqueued in diplomat-review.db
 ```
 
 ### LLM SDK adapter

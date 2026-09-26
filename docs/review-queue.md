@@ -76,10 +76,10 @@ q.approve("01ab...", reviewer="alice", note="ok, vendor whitelisted")
 try:
     q.reject("01ab...", reviewer="alice")
 except ReviewQueueError as e:
-    print(e)   # already approved -> cannot transition
+    print(e)  # already approved -> cannot transition
 
-q.expire_due()       # flips pending items past expires_at to "expired"
-q.pending_count()    # int
+q.expire_due()  # flips pending items past expires_at to "expired"
+q.pending_count()  # int
 q.close()
 ```
 
@@ -92,7 +92,7 @@ the queue, in both `params` and the per-violation `context`. Opt out
 explicitly:
 
 ```python
-ReviewQueue("./review.db", redact_params=False)   # raw values stored
+ReviewQueue("./review.db", redact_params=False)  # raw values stored
 ```
 
 `SENSITIVE_FIELDS` is mutable at runtime if you need to add domain-
@@ -101,11 +101,11 @@ specific keys. Mutate it once at startup, before any `Gate` evaluates.
 ## TTL / auto-expiry
 
 ```python
-q = ReviewQueue("./review.db", ttl_seconds=3600)        # default for all enqueues
-q.enqueue(verdict, ttl_seconds=600)                     # per-item override
+q = ReviewQueue("./review.db", ttl_seconds=3600)  # default for all enqueues
+q.enqueue(verdict, ttl_seconds=600)  # per-item override
 
 # In a periodic job:
-expired = q.expire_due()    # returns the number of rows flipped
+expired = q.expire_due()  # returns the number of rows flipped
 ```
 
 `expire_due()` only inspects items still in `pending`. Already-decided

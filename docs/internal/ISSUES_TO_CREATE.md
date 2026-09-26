@@ -66,7 +66,8 @@ Add `SemanticPolicy` to `src/diplomat_gate/policies/base.py`:
 ```python
 class SemanticPolicy(Policy):
     """Policy that delegates evaluation to an LLM judge."""
-    prompt_template: str   # {tool_call} placeholder
+
+    prompt_template: str  # {tool_call} placeholder
     model: str = "gpt-4o-mini"
     verdict_true: Decision = Decision.CONTINUE
     verdict_false: Decision = Decision.STOP

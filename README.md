@@ -220,12 +220,14 @@ from diplomat_gate import Blocked, Gate, NeedsReview, configure, gate
 
 configure(Gate.from_yaml("gate.yaml"))
 
+
 @gate(action="charge_card")
 def charge(amount: int, customer_id: str) -> dict:
     return stripe.charges.create(amount=amount, customer=customer_id)
 
-charge(amount=500, customer_id="cus_123")          # CONTINUE -> normal return
-charge(amount=50_000, customer_id="cus_123")       # STOP    -> raises Blocked
+
+charge(amount=500, customer_id="cus_123")  # CONTINUE -> normal return
+charge(amount=50_000, customer_id="cus_123")  # STOP    -> raises Blocked
 ```
 
 - **CONTINUE**: function executes, returns its normal value.
@@ -316,7 +318,7 @@ Bring-your-own LLM SDK. Adapters are duck-typed — installing the SDK is
 not required to use them.
 
 ```python
-from diplomat_gate.adapters.openai    import filter_allowed as openai_filter
+from diplomat_gate.adapters.openai import filter_allowed as openai_filter
 from diplomat_gate.adapters.anthropic import filter_allowed as anthropic_filter
 from diplomat_gate.adapters.langchain import gated_tool
 
