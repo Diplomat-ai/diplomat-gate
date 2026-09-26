@@ -84,9 +84,20 @@ jobs:
       - run: pip install -e ".[dev,all]" build twine
       - run: python scripts/validate_release.py
 
+  gate2-check:
+    name: gate2-check
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -e ".[dev,all]"
+      - run: bash scripts/checks/gate2.sh
+
   ci-required:
     name: ci-required
     runs-on: ubuntu-latest
-    needs: [lint, test, build, release-check]
+    needs: [lint, test, build, release-check, gate2-check]
     steps:
       - run: echo "all required checks green"

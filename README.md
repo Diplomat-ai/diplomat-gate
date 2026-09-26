@@ -117,7 +117,7 @@ Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent f
 - **Reproducible OpenClaw demo** — `python demos/openclaw/run.py` shows
   the insurance email incident in under 60 seconds, no API key needed.
 - **Release validation pipeline** — `scripts/validate_release.py` runs a
-  14-step gate: lint → tests → benchmarks → build → install → smoke → demo.
+  15-step gate: lint → tests → benchmarks → build → install → smoke → demo.
 
 ## What's new in 0.2.0
 
@@ -293,6 +293,11 @@ diplomat-gate audit verify        --db ./diplomat-audit.db
 diplomat-gate audit rebuild-chain --db ./diplomat-audit.db   # one-shot recovery
 ```
 
+The chain is verifiable by a third party **without installing this package**:
+the format is specified in [`docs/receipt-format.md`](docs/receipt-format.md) and
+[`tools/verify_receipts.py`](tools/verify_receipts.py) is a single-file,
+standard-library-only verifier (`python verify_receipts.py <audit.db>`).
+
 Sensitive parameters in violation contexts (`recipient`, `to`, `email`,
 `domain`, `amount`, `card_last4`, `phone`) are redacted to
 `h:<sha256-prefix>` before persistence. See [`docs/audit-trail.md`](docs/audit-trail.md)
@@ -444,7 +449,7 @@ diplomat-gate is solo-maintained and AI-assisted: a large share of the commits
 are authored by me but committed through an AI coding agent. What matters for a
 security tool is not who typed the lines but whether the behavior is verifiable.
 The credibility anchors are the ones you can check yourself: 146 tests, a
-14-step release gate (`scripts/validate_release.py`), a green CI matrix across
+15-step release gate (`scripts/validate_release.py`), a green CI matrix across
 Python 3.10–3.13 on Linux / Windows / macOS, and runnable examples that need no
 API key. Run `python -m pytest tests/ -v` and `python benchmarks/run.py` and
 judge the tool on its output.
@@ -505,7 +510,7 @@ it with complementary tools for what it doesn't.
 | Change Date | Four years after each version's release date |
 | Change License | Apache License 2.0 |
 
-Need a commercial license or have a question about your use case? Contact **contact@diplomat.run**.
+Need a commercial license or have a question about your use case? Contact **josselin@diplomat.run**.
 
 BSL 1.1 is a source-available license, not an OSI-approved open source license. The static scanner [`diplomat-agent`](https://github.com/Diplomat-ai/diplomat-agent) remains fully open source under its own license.
 
