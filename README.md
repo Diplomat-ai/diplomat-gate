@@ -487,4 +487,27 @@ it with complementary tools for what it doesn't.
 
 ## License
 
-Apache 2.0
+`diplomat-gate` is licensed under the **Business Source License 1.1** (BSL 1.1). See [LICENSE](./LICENSE) for the full terms.
+
+**In plain terms:**
+
+- **Free to use:** you can read, modify, self-host and run diplomat-gate in production for your own internal use, including in commercial products that use it to guard your own agents.
+- **Not allowed without a commercial license:** offering diplomat-gate (or a substantial part of its functionality) to third parties as a hosted, managed or resold service, such as an agent-governance or audit service that competes with Diplomat.
+- **Becomes open source:** each version converts automatically to **Apache License 2.0** four years after its release.
+
+| | |
+|---|---|
+| Licensor | Diplomat Services SASU |
+| Licensed Work | diplomat-gate [version] |
+| Additional Use Grant | Production use is permitted, provided you do not offer the Licensed Work to third parties as a hosted or managed service that competes with the Licensor's paid offerings. |
+| Change Date | Four years after each version's release date |
+| Change License | Apache License 2.0 |
+
+Need a commercial license or have a question about your use case? Contact **[contact email]**.
+
+BSL 1.1 is a source-available license, not an OSI-approved open source license. The static scanner [`diplomat-agent`](https://github.com/Diplomat-ai/diplomat-agent) remains fully open source under its own license.
+
+## Contributing
+
+By submitting a contribution, you agree that it may be distributed under the terms of this license and assign the rights needed for the Licensor to relicense it. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
