@@ -81,7 +81,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
-      - run: pip install -e ".[all]" pyyaml
+      - run: pip install -e ".[dev,all]" build twine
       - run: python scripts/validate_release.py
 
   ci-required:
