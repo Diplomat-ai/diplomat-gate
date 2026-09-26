@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `docs/ai-act-evidence.md` — draft page mapping AI Act requirements to the evidence
+  artifacts diplomat-gate produces (audit log, review queue, redaction), each with a
+  mandatory "what it does not cover" column. Status: draft, pending legal review.
+  `tests/test_ai_act_doc.py` guards it against cited-code drift and compliance claims.
 - `docs/receipt-format.md` — versioned specification (v1) of the audit receipt chain,
   with hand-derived test vectors. `tools/verify_receipts.py` — standalone,
   standard-library-only, read-only verifier (exit 0/1/2). `tests/test_receipt_format.py`
