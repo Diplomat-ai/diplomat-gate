@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `docs/receipt-format.md` — versioned specification (v1) of the audit receipt chain,
+  with hand-derived test vectors. `tools/verify_receipts.py` — standalone,
+  standard-library-only, read-only verifier (exit 0/1/2). `tests/test_receipt_format.py`
+  checks it against `verify_chain()` row by row. `scripts/validate_release.py` gains a
+  concordance step (now 15 steps).
 - Repository hygiene: added `.github/dependabot.yml` (monthly pip + github-actions),
   `.editorconfig`, moved pre-launch notes to `docs/internal/`.
 - `diplomat-gate validate <gate.yaml>` CLI subcommand — validates a gate.yaml

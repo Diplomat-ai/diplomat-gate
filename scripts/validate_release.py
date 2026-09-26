@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release validation gate — 14 steps, stop at first failure.
+"""Release validation gate — 15 steps, stop at first failure.
 
 Usage:
     python scripts/validate_release.py
@@ -18,7 +18,7 @@ from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 PYTHON = sys.executable
-TOTAL_STEPS = 14
+TOTAL_STEPS = 15
 
 
 def _run(
@@ -48,8 +48,47 @@ def _check(step: str, cmd: list[str], *, cwd: Path | None = None) -> bool:
     return False
 
 
+#: Step 14 payload: the standalone verifier must agree with the library on a
+#: healthy database and on a tampered one (same verdict, same first bad row).
+_RECEIPT_CONCORDANCE = r"""
+import sqlite3, subprocess, sys, tempfile
+from pathlib import Path
+from diplomat_gate import Gate
+from diplomat_gate.audit import verify_chain
+
+tool = sys.argv[1]
+with tempfile.TemporaryDirectory() as tmp:
+    db = str(Path(tmp) / "audit.db")
+    gate = Gate.from_dict(
+        {"payment": [{"id": "payment.amount_limit", "max_amount": 1000}]}, audit_path=db
+    )
+    for amount in (100, 1500, 500, 9000):
+        gate.evaluate({"action": "charge_card", "amount": amount, "agent_id": "release"})
+    gate.close()
+
+    def standalone():
+        r = subprocess.run([sys.executable, tool, db], capture_output=True, text=True)
+        return r.returncode, r.stdout.strip()
+
+    lib = verify_chain(db)
+    code, out = standalone()
+    assert lib.valid and code == 0, ("healthy", lib, code, out)
+    assert f"({lib.records_checked} record(s) checked)" in out, (lib, out)
+
+    conn = sqlite3.connect(db)
+    conn.execute("UPDATE verdicts SET decision='STOP' WHERE sequence=1")
+    conn.commit()
+    conn.close()
+    lib = verify_chain(db)
+    code, out = standalone()
+    assert not lib.valid and code == 1, ("tampered", lib, code, out)
+    assert f"first invalid sequence: {lib.first_invalid_sequence}" in out, (lib, out)
+print("standalone verifier agrees with verify_chain")
+"""
+
+
 def _surface_check() -> bool:
-    """Step 14 — README surface consistency (5 sub-checks aggregated)."""
+    """Step 15 — README surface consistency (5 sub-checks aggregated)."""
     label = f"[{TOTAL_STEPS}/{TOTAL_STEPS} README surface check]"
     readme_path = REPO / "README.md"
     pyproject_path = REPO / "pyproject.toml"
@@ -152,10 +191,10 @@ def main() -> None:
     print(f"\n  diplomat-gate release validation\n  {'─' * 40}")
 
     steps: list[tuple[str, list[str]]] = [
-        ("1/14 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
-        ("2/14 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
+        ("1/15 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
+        ("2/15 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
         (
-            "3/14 pytest --cov",
+            "3/15 pytest --cov",
             [
                 PYTHON,
                 "-m",
@@ -167,11 +206,11 @@ def main() -> None:
             ],
         ),
         (
-            "4/14 pytest integration",
+            "4/15 pytest integration",
             [PYTHON, "-m", "pytest", "-m", "integration", "-q", "--tb=short"],
         ),
         (
-            "5/14 benchmarks p95<5ms",
+            "5/15 benchmarks p95<5ms",
             [
                 PYTHON,
                 "benchmarks/run.py",
@@ -181,8 +220,8 @@ def main() -> None:
                 "5.0",
             ],
         ),
-        ("6/14 build sdist+wheel", [PYTHON, "-m", "build"]),
-        ("7/14 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
+        ("6/15 build sdist+wheel", [PYTHON, "-m", "build"]),
+        ("7/15 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
     ]
 
     for step, cmd in steps:
@@ -191,10 +230,10 @@ def main() -> None:
 
     # Step 8 — fresh venv smoke install
     print(f"  {'─' * 40}")
-    print("  [8/14 fresh-venv smoke install]", flush=True)
+    print("  [8/15 fresh-venv smoke install]", flush=True)
     dist_wheels = sorted(REPO.glob("dist/*.whl"))
     if not dist_wheels:
-        print("  ✗ FAIL  [8/14] no wheel found in dist/")
+        print("  ✗ FAIL  [8/15] no wheel found in dist/")
         sys.exit(1)
     wheel = dist_wheels[-1]
     with tempfile.TemporaryDirectory() as tmp:
@@ -202,39 +241,39 @@ def main() -> None:
         venv = tmp_path / "venv"
         r1 = _run([PYTHON, "-m", "venv", str(venv)])
         if r1.returncode != 0:
-            print("  ✗ FAIL  [8/14] venv creation failed")
+            print("  ✗ FAIL  [8/15] venv creation failed")
             sys.exit(1)
         venv_python = venv / ("Scripts" if sys.platform == "win32" else "bin") / "python"
         r2 = _run([str(venv_python), "-m", "pip", "install", f"{wheel}[yaml]", "--quiet"])
         if r2.returncode != 0:
-            print("  ✗ FAIL  [8/14] pip install failed")
+            print("  ✗ FAIL  [8/15] pip install failed")
             lines = (r2.stderr or r2.stdout or "").splitlines()[:3]
             for ln in lines:
                 print(f"         {ln}")
             sys.exit(1)
-        print("  ✓ PASS  [8/14 fresh-venv smoke install]")
+        print("  ✓ PASS  [8/15 fresh-venv smoke install]")
 
         # Step 9 — diplomat-gate --help
         venv_bin = venv / ("Scripts" if sys.platform == "win32" else "bin")
         diplomat_cmd = venv_bin / (
             "diplomat-gate.exe" if sys.platform == "win32" else "diplomat-gate"
         )
-        if not _check("9/14 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
+        if not _check("9/15 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
             sys.exit(1)
 
         # Step 10 — audit verify --help
         if not _check(
-            "10/14 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
+            "10/15 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
         ):
             sys.exit(1)
 
         # Step 11 — validate --help
-        if not _check("11/14 validate --help", [str(diplomat_cmd), "validate", "--help"]):
+        if not _check("11/15 validate --help", [str(diplomat_cmd), "validate", "--help"]):
             sys.exit(1)
 
         # Step 12 — validate gate.yaml.example
         if not _check(
-            "12/14 validate gate.yaml.example",
+            "12/15 validate gate.yaml.example",
             [str(diplomat_cmd), "validate", str(REPO / "gate.yaml.example")],
         ):
             sys.exit(1)
@@ -242,12 +281,19 @@ def main() -> None:
     # Step 13 — demo --ci
     demo_path = REPO / "demos" / "openclaw" / "run.py"
     if demo_path.exists():
-        if not _check("13/14 demo --ci", [PYTHON, str(demo_path), "--ci"]):
+        if not _check("13/15 demo --ci", [PYTHON, str(demo_path), "--ci"]):
             sys.exit(1)
     else:
-        print("  ⚠ SKIP  [13/14 demo --ci] demos/openclaw/run.py not yet created")
+        print("  ⚠ SKIP  [13/15 demo --ci] demos/openclaw/run.py not yet created")
 
-    # Step 14 — README surface consistency check
+    # Step 14 — standalone receipt verifier agrees with the library
+    if not _check(
+        "14/15 receipt verifier concordance",
+        [PYTHON, "-c", _RECEIPT_CONCORDANCE, str(REPO / "tools" / "verify_receipts.py")],
+    ):
+        sys.exit(1)
+
+    # Step 15 — README surface consistency check
     if not _surface_check():
         sys.exit(1)
 
