@@ -49,7 +49,7 @@ def _check(step: str, cmd: list[str], *, cwd: Path | None = None) -> bool:
 
 
 def _surface_check() -> bool:
-    """Step 14 — README surface consistency (4 sub-checks aggregated)."""
+    """Step 14 — README surface consistency (5 sub-checks aggregated)."""
     label = f"[{TOTAL_STEPS}/{TOTAL_STEPS} README surface check]"
     readme_path = REPO / "README.md"
     pyproject_path = REPO / "pyproject.toml"
@@ -123,6 +123,17 @@ def _surface_check() -> bool:
         failures.append(
             f"D: README mentions {sorted(step_counts)} '-step' value(s); script declares {TOTAL_STEPS}"
         )
+
+    # Check E — no unfilled BSL template placeholders in LICENSE or README.
+    placeholders = ("[X.Y.Z", "[YYYY-MM-DD", "[contact email]", "[version]")
+    license_path = REPO / "LICENSE"
+    for name, text in (
+        ("LICENSE", license_path.read_text(encoding="utf-8") if license_path.exists() else ""),
+        ("README.md", readme),
+    ):
+        for ph in placeholders:
+            if ph in text:
+                failures.append(f"E: {name} still contains unfilled placeholder {ph!r}")
 
     if failures:
         print(f"  ✗ FAIL  {label}")

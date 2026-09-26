@@ -5,7 +5,7 @@ Parameters
 
 Licensor:             Diplomat Services SASU
 
-Licensed Work:        diplomat-gate [X.Y.Z+1]
+Licensed Work:        diplomat-gate 0.4.0
                       The Licensed Work is (c) 2026 Diplomat Services SASU
 
 Additional Use Grant: You may make production use of the Licensed Work,
@@ -17,13 +17,12 @@ Additional Use Grant: You may make production use of the Licensed Work,
                       own commercial products and services, is not a
                       competing offering.
 
-Change Date:          [YYYY-MM-DD, four years after the release date of this
-                      version]
+Change Date:          2030-09-26
 
 Change License:       Apache License, Version 2.0
 
 For information about alternative licensing arrangements for the Licensed Work,
-please contact [contact email].
+please contact contact@diplomat.run.
 
 Notice
 

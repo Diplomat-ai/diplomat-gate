@@ -500,12 +500,12 @@ it with complementary tools for what it doesn't.
 | | |
 |---|---|
 | Licensor | Diplomat Services SASU |
-| Licensed Work | diplomat-gate [version] |
+| Licensed Work | diplomat-gate 0.4.0 |
 | Additional Use Grant | Production use is permitted, provided you do not offer the Licensed Work to third parties as a hosted or managed service that competes with the Licensor's paid offerings. |
 | Change Date | Four years after each version's release date |
 | Change License | Apache License 2.0 |
 
-Need a commercial license or have a question about your use case? Contact **[contact email]**.
+Need a commercial license or have a question about your use case? Contact **contact@diplomat.run**.
 
 BSL 1.1 is a source-available license, not an OSI-approved open source license. The static scanner [`diplomat-agent`](https://github.com/Diplomat-ai/diplomat-agent) remains fully open source under its own license.
 

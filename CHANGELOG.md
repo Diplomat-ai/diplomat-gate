@@ -27,7 +27,7 @@ All notable changes to this project will be documented in this file.
   `validate_config()` in a CI script.
 - `docs/cli.md` — full CLI reference for `validate`, `audit`, and `review`.
 - `scripts/validate_release.py` updated: added steps 10bis (validate --help)
-  and 10ter (validate gate.yaml.example); renumbered all steps to X/13.
+  and 10ter (validate gate.yaml.example); renumbered all steps to /13 (later extended to /14 by the README surface check).
 
 ## [0.3.0] — 2026-04-22
 
