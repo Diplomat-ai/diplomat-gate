@@ -430,12 +430,14 @@ your codebase and reports every tool call with real-world side effects.
 
 ## Need centralized governance?
 
-`diplomat-gate` is local-first and free. For teams that need a hosted
-control plane:
+`diplomat-gate` is local-first and free, and it already ships a
+hash-chained, third-party-verifiable audit log and a human review queue
+(see [`docs/ai-act-evidence.md`](docs/ai-act-evidence.md) — draft, pending
+legal review — for which requirements this evidence can feed, and which it
+does not cover). For teams that need a hosted control plane:
 
 [**diplomat.run**](https://diplomat.run) — immutable cross-tenant audit
-trail, real-time dashboard, managed approval routing, compliance export
-(EU AI Act Article 12).
+trail, real-time dashboard, managed approval routing, compliance export.
 
 ## Requirements
 
