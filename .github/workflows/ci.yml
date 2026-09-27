@@ -106,9 +106,20 @@ jobs:
       - run: pip install -e ".[dev,all]"
       - run: bash scripts/checks/gate3.sh
 
+  gate-sarif-check:
+    name: gate-sarif-check
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -e ".[dev,all]"
+      - run: bash scripts/checks/gate-sarif.sh
+
   ci-required:
     name: ci-required
     runs-on: ubuntu-latest
-    needs: [lint, test, build, release-check, gate2-check, gate3-check]
+    needs: [lint, test, build, release-check, gate2-check, gate3-check, gate-sarif-check]
     steps:
       - run: echo "all required checks green"
