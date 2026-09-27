@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-09-26
+
+### Changed
+
+- Package license metadata now declares `BUSL-1.1` with the
+  `License :: Other/Proprietary License` classifier, matching the `LICENSE` file
+  (PyPI metadata previously declared Apache-2.0).
+- CI: `release-check` runs `scripts/validate_release.py` on every pull request,
+  and a `ci-required` aggregator job gates merges to `main`.
+
+### Fixed
+
+- Filled the unfilled BSL 1.1 template placeholders in `LICENSE` and `README.md`
+  (Licensed Work, Change Date, contact address); `validate_release.py` now fails
+  on any remaining placeholder.
+
 ### Added
 
 - `docs/ai-act-evidence.md` — draft page mapping AI Act requirements to the evidence

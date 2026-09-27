@@ -112,6 +112,21 @@ Python `dict` works out of the box. Adapters for popular SDKs are included.
 
 Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent framework that exposes dict-like tool calls.
 
+## What's new in 0.4.0
+
+- **Audit receipt format v1** — the hash-chained audit log is now a
+  versioned specification ([`docs/receipt-format.md`](docs/receipt-format.md))
+  with test vectors, and a single-file, standard-library-only verifier
+  ([`tools/verify_receipts.py`](tools/verify_receipts.py)) lets a third party
+  check a chain without installing this package.
+- **`diplomat-gate validate <gate.yaml>`** — validates a config without
+  running any policy; stable JSON output for CI.
+- **AI Act evidence page (draft)** — [`docs/ai-act-evidence.md`](docs/ai-act-evidence.md)
+  maps requirements to the evidence artifacts diplomat-gate produces, with
+  what each does not cover. Draft, pending legal review.
+- **License metadata** — package metadata now declares `BUSL-1.1`, matching
+  the `LICENSE` file (previously it declared Apache-2.0).
+
 ## What's new in 0.3.0
 
 - **Reproducible OpenClaw demo** — `python demos/openclaw/run.py` shows
