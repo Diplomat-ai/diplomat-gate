@@ -465,7 +465,7 @@ trail, real-time dashboard, managed approval routing, compliance export.
 diplomat-gate is solo-maintained and AI-assisted: a large share of the commits
 are authored by me but committed through an AI coding agent. What matters for a
 security tool is not who typed the lines but whether the behavior is verifiable.
-The credibility anchors are the ones you can check yourself: 146 tests, a
+The credibility anchors are the ones you can check yourself: 272 tests, a
 15-step release gate (`scripts/validate_release.py`), a green CI matrix across
 Python 3.10–3.13 on Linux / Windows / macOS, and runnable examples that need no
 API key. Run `python -m pytest tests/ -v` and `python benchmarks/run.py` and
