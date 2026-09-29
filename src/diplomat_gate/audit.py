@@ -324,7 +324,16 @@ def verify_chain(db_path: str) -> ChainVerificationResult:
 
     Read-only: this function does not mutate the database. Returns a
     :class:`ChainVerificationResult` describing the outcome.
+
+    Raises:
+        FileNotFoundError: if ``db_path`` does not exist. This is a usage/I/O
+            error, not an invalid chain — callers (the CLI) should map it to
+            a distinct exit code rather than reporting "chain invalid". A
+            missing path is never allowed to reach ``sqlite3.connect``, which
+            would otherwise silently create an empty file.
     """
+    if not Path(db_path).exists():
+        raise FileNotFoundError(f"no such file: {db_path}")
     conn = sqlite3.connect(db_path)
     try:
         try:

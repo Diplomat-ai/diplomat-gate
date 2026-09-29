@@ -549,11 +549,25 @@ class TestCLI:
         assert "2" in out
 
     def test_verify_missing_file(self, tmp_path, capsys):
+        from pathlib import Path
+
         from diplomat_gate.cli import main
 
         db = str(tmp_path / "does_not_exist.db")
         rc = main(["--no-color", "audit", "verify", "--db", db])
-        # sqlite3.connect creates an empty file; verify reports invalid (no table)
-        # → exit code 1 (invalid), or 2 if connect itself fails.
-        assert rc in (1, 2)
+        # A missing path is a usage/I/O error (exit 2), not an invalid chain (exit 1).
+        # It must NOT be silently turned into an empty sqlite file by sqlite3.connect.
+        assert rc == 2
+        assert not Path(db).exists()
+        capsys.readouterr()
+
+    def test_verify_existing_empty_file_stays_invalid(self, tmp_path, capsys):
+        """An existing file with no 'verdicts' table is a different case from a missing
+        path: it stays exit 1 (invalid chain), unchanged by the missing-path fix."""
+        from diplomat_gate.cli import main
+
+        db = tmp_path / "empty.db"
+        db.touch()  # existing file, but not a valid SQLite DB with a verdicts table
+        rc = main(["--no-color", "audit", "verify", "--db", str(db)])
+        assert rc == 1
         capsys.readouterr()

@@ -8,6 +8,10 @@ without installing diplomat-gate. It is written for an external
 auditor: no Python knowledge is required to re-implement the check.
 
 - Human-oriented overview and migration notes: [audit-trail.md](audit-trail.md)
+- SARIF/JSONL export (`diplomat-gate audit export`) is a **derived view** of
+  the receipts documented here, for tooling (GitHub Code Scanning, a SIEM) —
+  it is not a redefinition of the format; see [audit-trail.md](audit-trail.md)
+  for its output shapes and flags.
 - Reference verifier (single file, Python standard library only):
   [`tools/verify_receipts.py`](../tools/verify_receipts.py)
 - Library implementation: `src/diplomat_gate/audit.py`
