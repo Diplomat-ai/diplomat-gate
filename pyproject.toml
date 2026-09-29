@@ -31,6 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
 ]
 
 [project.optional-dependencies]
@@ -59,9 +60,37 @@ Homepage = "https://diplomat.run"
 Repository = "https://github.com/Diplomat-ai/diplomat-gate"
 Documentation = "https://github.com/Diplomat-ai/diplomat-gate#readme"
 Issues = "https://github.com/Diplomat-ai/diplomat-gate/issues"
+Changelog = "https://github.com/Diplomat-ai/diplomat-gate/blob/main/CHANGELOG.md"
 
 [project.scripts]
 diplomat-gate = "diplomat_gate.cli:main"
+
+[tool.hatch.build.targets.sdist]
+# Allowlist, not a denylist of the working tree: hatchling matches these
+# patterns with gitignore semantics (pathspec.GitIgnoreSpec), where an
+# unanchored pattern like "README.md" or "src/" matches at ANY depth, not
+# just the repo root. Every entry below is anchored with a leading "/" so
+# a same-named file nested elsewhere (or a stray root-level scratch file
+# never added here) cannot slip in the way files-3/ and reports/ once did.
+include = [
+    "/src/",
+    "/tests/",
+    "/examples/",
+    "/docs/",
+    "/demos/",
+    "/benchmarks/",
+    "/scripts/",
+    "/tools/",
+    "/.github/",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/SECURITY.md",
+    "/CONTRIBUTING.md",
+    "/CODE_OF_CONDUCT.md",
+    "/pyproject.toml",
+    "/gate.yaml.example",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/diplomat_gate"]
