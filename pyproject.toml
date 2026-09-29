@@ -31,6 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
 ]
 
 [project.optional-dependencies]
@@ -59,6 +60,7 @@ Homepage = "https://diplomat.run"
 Repository = "https://github.com/Diplomat-ai/diplomat-gate"
 Documentation = "https://github.com/Diplomat-ai/diplomat-gate#readme"
 Issues = "https://github.com/Diplomat-ai/diplomat-gate/issues"
+Changelog = "https://github.com/Diplomat-ai/diplomat-gate/blob/main/CHANGELOG.md"
 
 [project.scripts]
 diplomat-gate = "diplomat_gate.cli:main"
