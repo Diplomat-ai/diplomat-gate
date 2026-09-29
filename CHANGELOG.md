@@ -6,6 +6,34 @@ All notable changes to this project will be documented in this file.
 
 ## [0.4.0] — 2026-09-26
 
+### Added (post-release-branch additions, merged into main before the PyPI publish)
+
+- `diplomat-gate audit export --db <path> [--format sarif|json] [--since ...] [--until ...]` —
+  exports verdicts as a SARIF 2.1.0 log (`STOP` → `error`, `REVIEW` → `warning`, `CONTINUE`
+  skipped) or newline-delimited JSON, for GitHub Code Scanning / SIEM tooling. A derived
+  view of the receipt format documented in `docs/receipt-format.md`, not a redefinition
+  of it. Stdlib-only, no new mandatory dependency.
+- `src/diplomat_gate/py.typed` (PEP 561 marker) and the `Typing :: Typed` classifier;
+  a `Changelog` entry in the PyPI project URLs.
+
+### Changed (additional)
+
+- License metadata correctness verified end to end on the published wheel (`twine check`,
+  `Classifier: License :: Other/Proprietary License`, `License: BUSL-1.1` in the real
+  PyPI-served METADATA).
+
+### Fixed (additional)
+
+- `audit verify --db <missing path>` now exits `2` (usage/I/O error) instead of silently
+  letting `sqlite3` create an empty file and reporting exit `1` ("chain invalid"). The
+  "existing file, no `verdicts` table" case is unchanged (still exit `1`).
+- The sdist previously bundled every file in the working tree not covered by
+  `.gitignore` — including untracked local scratch files. It now uses an explicit,
+  root-anchored `[tool.hatch.build.targets.sdist]` allowlist, verified by diffing its
+  contents against `git ls-files`.
+- README test count corrected (stale "146 tests" → the real, measured count).
+- `SECURITY.md` supported-versions table updated to `0.4.x` only.
+
 ### Changed
 
 - Package license metadata now declares `BUSL-1.1` with the
