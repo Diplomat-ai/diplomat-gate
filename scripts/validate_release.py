@@ -189,6 +189,13 @@ def _surface_check() -> bool:
 
 
 SPDX_HEADER = "# SPDX-License-Identifier: BUSL-1.1"
+SPDX_MIXED_HEADER = "# SPDX-License-Identifier: BUSL-1.1 AND Apache-2.0"
+PORTIONS_NOTE = "Portions Copyright Mohak Gupta, licensed under Apache-2.0"
+#: src modules that mix Diplomat code with Apache-2.0 portions (see NOTICE).
+MIXED_LICENSE_SRC = (
+    "src/diplomat_gate/audit.py",
+    "src/diplomat_gate/cli.py",
+)
 
 
 def _license_check() -> bool:
@@ -203,9 +210,15 @@ def _license_check() -> bool:
         failures.append('LICENSE does not contain "Business Source License 1.1"')
 
     for path in sorted((REPO / "src").rglob("*.py")):
+        rel = path.relative_to(REPO).as_posix()
         lines = path.read_text(encoding="utf-8").splitlines()
-        if lines[:1] != [SPDX_HEADER]:
-            failures.append(f"{path.relative_to(REPO).as_posix()}: missing {SPDX_HEADER!r}")
+        if rel in MIXED_LICENSE_SRC:
+            if lines[:1] != [SPDX_MIXED_HEADER]:
+                failures.append(f"{rel}: missing {SPDX_MIXED_HEADER!r}")
+            elif not any(PORTIONS_NOTE in ln for ln in lines[1:3]):
+                failures.append(f"{rel}: missing {PORTIONS_NOTE!r} note")
+        elif lines[:1] != [SPDX_HEADER]:
+            failures.append(f"{rel}: missing {SPDX_HEADER!r}")
 
     if failures:
         print(f"  ✗ FAIL  {label}")

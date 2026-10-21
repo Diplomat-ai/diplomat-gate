@@ -102,3 +102,25 @@ def test_license_step_flags_missing_header(tmp_path, monkeypatch):
     assert module._license_check() is True
     (tmp_path / "LICENSE").write_text("MIT\n", encoding="utf-8")
     assert module._license_check() is False
+
+
+def test_license_step_accepts_mixed_expression_only_on_mixed_files(tmp_path, monkeypatch):
+    module = _load_validate_release()
+    src = tmp_path / "src" / "diplomat_gate"
+    src.mkdir(parents=True)
+    (tmp_path / "LICENSE").write_text("Business Source License 1.1\n", encoding="utf-8")
+    monkeypatch.setattr(module, "REPO", tmp_path)
+    monkeypatch.setattr(module, "MIXED_LICENSE_SRC", ("src/diplomat_gate/audit.py",))
+    mixed = f"{module.SPDX_MIXED_HEADER}\n# {module.PORTIONS_NOTE} (see NOTICE)\n"
+    (src / "audit.py").write_text(mixed, encoding="utf-8")
+    (src / "other.py").write_text(f"{module.SPDX_HEADER}\n", encoding="utf-8")
+    assert module._license_check() is True
+    # The mixed expression is not accepted on a file that is not listed as mixed.
+    (src / "other.py").write_text(mixed, encoding="utf-8")
+    assert module._license_check() is False
+    # A listed mixed file must carry the mixed expression and the portions note.
+    (src / "other.py").write_text(f"{module.SPDX_HEADER}\n", encoding="utf-8")
+    (src / "audit.py").write_text(f"{module.SPDX_HEADER}\n", encoding="utf-8")
+    assert module._license_check() is False
+    (src / "audit.py").write_text(f"{module.SPDX_MIXED_HEADER}\nx = 1\n", encoding="utf-8")
+    assert module._license_check() is False

@@ -22,6 +22,9 @@ All notable changes to this project will be documented in this file.
 - `NOTICE` and `licenses/Apache-2.0.txt`: retained copyright and licence notices for two
   third-party contributions merged while the project was Apache-2.0.
 - `# SPDX-License-Identifier: BUSL-1.1` header on every `src/**/*.py` module.
+- `audit.py`, `cli.py`, `tests/test_audit.py` and `docs/audit-trail.md` mix Diplomat code
+  with Apache-2.0 portions (see `NOTICE`): they carry
+  `SPDX-License-Identifier: BUSL-1.1 AND Apache-2.0` and a "Portions Copyright" note.
 - `scripts/validate_release.py`: licence-header check (step 16) and Change Date check
   (step 17); 17 steps in total.
 - `tests/test_license_headers.py`, `tests/test_license_metadata.py`.
