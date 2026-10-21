@@ -132,7 +132,7 @@ Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent f
 - **Reproducible OpenClaw demo** — `python demos/openclaw/run.py` shows
   the insurance email incident in under 60 seconds, no API key needed.
 - **Release validation pipeline** — `scripts/validate_release.py` runs a
-  15-step gate: lint → tests → benchmarks → build → install → smoke → demo.
+  17-step gate: lint → tests → benchmarks → build → install → smoke → demo.
 
 ## What's new in 0.2.0
 
@@ -466,7 +466,7 @@ diplomat-gate is solo-maintained and AI-assisted: a large share of the commits
 are authored by me but committed through an AI coding agent. What matters for a
 security tool is not who typed the lines but whether the behavior is verifiable.
 The credibility anchors are the ones you can check yourself: 272 tests, a
-15-step release gate (`scripts/validate_release.py`), a green CI matrix across
+17-step release gate (`scripts/validate_release.py`), a green CI matrix across
 Python 3.10–3.13 on Linux / Windows / macOS, and runnable examples that need no
 API key. Run `python -m pytest tests/ -v` and `python benchmarks/run.py` and
 judge the tool on its output.

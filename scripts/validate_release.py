@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release validation gate — 15 steps, stop at first failure.
+"""Release validation gate — 17 steps, stop at first failure.
 
 Usage:
     python scripts/validate_release.py
@@ -14,11 +14,12 @@ import re
 import subprocess
 import sys
 import tempfile
+from datetime import date
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 PYTHON = sys.executable
-TOTAL_STEPS = 15
+TOTAL_STEPS = 17
 
 
 def _run(
@@ -89,7 +90,7 @@ print("standalone verifier agrees with verify_chain")
 
 def _surface_check() -> bool:
     """Step 15 — README surface consistency (5 sub-checks aggregated)."""
-    label = f"[{TOTAL_STEPS}/{TOTAL_STEPS} README surface check]"
+    label = "[15/17 README surface check]"
     readme_path = REPO / "README.md"
     pyproject_path = REPO / "pyproject.toml"
 
@@ -187,14 +188,78 @@ def _surface_check() -> bool:
     return True
 
 
+SPDX_HEADER = "# SPDX-License-Identifier: BUSL-1.1"
+
+
+def _license_check() -> bool:
+    """Step 16 — LICENSE is BSL 1.1 and every src module carries the SPDX header."""
+    label = "[16/17 BSL 1.1 license + SPDX headers]"
+    failures: list[str] = []
+
+    license_path = REPO / "LICENSE"
+    if not license_path.exists():
+        failures.append("LICENSE not found")
+    elif "Business Source License 1.1" not in license_path.read_text(encoding="utf-8"):
+        failures.append('LICENSE does not contain "Business Source License 1.1"')
+
+    for path in sorted((REPO / "src").rglob("*.py")):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        if lines[:1] != [SPDX_HEADER]:
+            failures.append(f"{path.relative_to(REPO).as_posix()}: missing {SPDX_HEADER!r}")
+
+    if failures:
+        print(f"  ✗ FAIL  {label}")
+        for line in failures[:6]:
+            print(f"         {line}")
+        return False
+    print(f"  ✓ PASS  {label}")
+    return True
+
+
+def _add_years(day: date, years: int) -> date:
+    try:
+        return day.replace(year=day.year + years)
+    except ValueError:  # 29 February
+        return day.replace(year=day.year + years, day=28)
+
+
+def _change_date_check(today: date | None = None) -> bool:
+    """Step 17 — LICENSE Change Date is an ISO date in the future, at most 4 years away."""
+    label = "[17/17 Change Date]"
+    today = today or date.today()
+    license_path = REPO / "LICENSE"
+    text = license_path.read_text(encoding="utf-8") if license_path.exists() else ""
+    match = re.search(r"^Change Date:\s*(\S+)\s*$", text, re.MULTILINE)
+    problem = ""
+    if match is None:
+        problem = "no 'Change Date:' line in LICENSE"
+    else:
+        try:
+            change_date = date.fromisoformat(match.group(1))
+        except ValueError:
+            problem = f"Change Date {match.group(1)!r} is not an ISO date (YYYY-MM-DD)"
+        else:
+            latest = _add_years(today, 4)
+            if change_date <= today:
+                problem = f"Change Date {change_date} is not in the future (today: {today})"
+            elif change_date > latest:
+                problem = f"Change Date {change_date} is more than 4 years away (max {latest})"
+    if problem:
+        print(f"  ✗ FAIL  {label}")
+        print(f"         {problem}")
+        return False
+    print(f"  ✓ PASS  {label}")
+    return True
+
+
 def main() -> None:
     print(f"\n  diplomat-gate release validation\n  {'─' * 40}")
 
     steps: list[tuple[str, list[str]]] = [
-        ("1/15 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
-        ("2/15 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
+        ("1/17 ruff check", [PYTHON, "-m", "ruff", "check", "."]),
+        ("2/17 ruff format", [PYTHON, "-m", "ruff", "format", "--check", "."]),
         (
-            "3/15 pytest --cov",
+            "3/17 pytest --cov",
             [
                 PYTHON,
                 "-m",
@@ -206,11 +271,11 @@ def main() -> None:
             ],
         ),
         (
-            "4/15 pytest integration",
+            "4/17 pytest integration",
             [PYTHON, "-m", "pytest", "-m", "integration", "-q", "--tb=short"],
         ),
         (
-            "5/15 benchmarks p95<5ms",
+            "5/17 benchmarks p95<5ms",
             [
                 PYTHON,
                 "benchmarks/run.py",
@@ -220,8 +285,8 @@ def main() -> None:
                 "5.0",
             ],
         ),
-        ("6/15 build sdist+wheel", [PYTHON, "-m", "build"]),
-        ("7/15 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
+        ("6/17 build sdist+wheel", [PYTHON, "-m", "build"]),
+        ("7/17 twine check", [PYTHON, "-m", "twine", "check", "dist/*"]),
     ]
 
     for step, cmd in steps:
@@ -230,10 +295,10 @@ def main() -> None:
 
     # Step 8 — fresh venv smoke install
     print(f"  {'─' * 40}")
-    print("  [8/15 fresh-venv smoke install]", flush=True)
+    print("  [8/17 fresh-venv smoke install]", flush=True)
     dist_wheels = sorted(REPO.glob("dist/*.whl"))
     if not dist_wheels:
-        print("  ✗ FAIL  [8/15] no wheel found in dist/")
+        print("  ✗ FAIL  [8/17] no wheel found in dist/")
         sys.exit(1)
     wheel = dist_wheels[-1]
     with tempfile.TemporaryDirectory() as tmp:
@@ -241,39 +306,39 @@ def main() -> None:
         venv = tmp_path / "venv"
         r1 = _run([PYTHON, "-m", "venv", str(venv)])
         if r1.returncode != 0:
-            print("  ✗ FAIL  [8/15] venv creation failed")
+            print("  ✗ FAIL  [8/17] venv creation failed")
             sys.exit(1)
         venv_python = venv / ("Scripts" if sys.platform == "win32" else "bin") / "python"
         r2 = _run([str(venv_python), "-m", "pip", "install", f"{wheel}[yaml]", "--quiet"])
         if r2.returncode != 0:
-            print("  ✗ FAIL  [8/15] pip install failed")
+            print("  ✗ FAIL  [8/17] pip install failed")
             lines = (r2.stderr or r2.stdout or "").splitlines()[:3]
             for ln in lines:
                 print(f"         {ln}")
             sys.exit(1)
-        print("  ✓ PASS  [8/15 fresh-venv smoke install]")
+        print("  ✓ PASS  [8/17 fresh-venv smoke install]")
 
         # Step 9 — diplomat-gate --help
         venv_bin = venv / ("Scripts" if sys.platform == "win32" else "bin")
         diplomat_cmd = venv_bin / (
             "diplomat-gate.exe" if sys.platform == "win32" else "diplomat-gate"
         )
-        if not _check("9/15 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
+        if not _check("9/17 diplomat-gate --help", [str(diplomat_cmd), "--help"]):
             sys.exit(1)
 
         # Step 10 — audit verify --help
         if not _check(
-            "10/15 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
+            "10/17 audit verify --help", [str(diplomat_cmd), "audit", "verify", "--help"]
         ):
             sys.exit(1)
 
         # Step 11 — validate --help
-        if not _check("11/15 validate --help", [str(diplomat_cmd), "validate", "--help"]):
+        if not _check("11/17 validate --help", [str(diplomat_cmd), "validate", "--help"]):
             sys.exit(1)
 
         # Step 12 — validate gate.yaml.example
         if not _check(
-            "12/15 validate gate.yaml.example",
+            "12/17 validate gate.yaml.example",
             [str(diplomat_cmd), "validate", str(REPO / "gate.yaml.example")],
         ):
             sys.exit(1)
@@ -281,20 +346,28 @@ def main() -> None:
     # Step 13 — demo --ci
     demo_path = REPO / "demos" / "openclaw" / "run.py"
     if demo_path.exists():
-        if not _check("13/15 demo --ci", [PYTHON, str(demo_path), "--ci"]):
+        if not _check("13/17 demo --ci", [PYTHON, str(demo_path), "--ci"]):
             sys.exit(1)
     else:
-        print("  ⚠ SKIP  [13/15 demo --ci] demos/openclaw/run.py not yet created")
+        print("  ⚠ SKIP  [13/17 demo --ci] demos/openclaw/run.py not yet created")
 
     # Step 14 — standalone receipt verifier agrees with the library
     if not _check(
-        "14/15 receipt verifier concordance",
+        "14/17 receipt verifier concordance",
         [PYTHON, "-c", _RECEIPT_CONCORDANCE, str(REPO / "tools" / "verify_receipts.py")],
     ):
         sys.exit(1)
 
     # Step 15 — README surface consistency check
     if not _surface_check():
+        sys.exit(1)
+
+    # Step 16 — BSL 1.1 LICENSE and SPDX headers
+    if not _license_check():
+        sys.exit(1)
+
+    # Step 17 — Change Date is valid, in the future, at most 4 years away
+    if not _change_date_check():
         sys.exit(1)
 
     print(f"\n  {'─' * 40}")
