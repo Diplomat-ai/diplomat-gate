@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: BUSL-1.1
+# SPDX-License-Identifier: BUSL-1.1 AND Apache-2.0
 # Portions Copyright Mohak Gupta, licensed under Apache-2.0 (see NOTICE)
 """Local SQLite audit trail for gate verdicts.
 

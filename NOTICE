@@ -7,19 +7,28 @@ LICENSING.md).
 Portions of this software are Copyright (c) their respective authors and licensed under
 Apache-2.0. The full text of the Apache License, Version 2.0 is in licenses/Apache-2.0.txt.
 These portions were contributed while the project was distributed under Apache-2.0, and
-their copyright and license notices are retained here.
+their copyright and licence notices are retained here.
 
-1. Mohak Gupta (GitHub: lukiod)
+The copyright holders named below are the authors of the commits as recorded in the git
+history of this repository. No identity is asserted beyond what that history records.
+
+Files that mix Diplomat Services SASU code and these portions carry the SPDX expression
+"BUSL-1.1 AND Apache-2.0" and a "Portions Copyright" note at the top (an HTML comment in
+Markdown files).
+
+1. Mohak Gupta (author of commit 2d42eb1; the contribution was first proposed as PR #26
+   by @lukiod)
    Commit: 2d42eb1 ("Add audit export command: SARIF and JSONL formats")
-   Files touched:
+   Files touched (each carries the mixed-licence note):
      - src/diplomat_gate/audit.py
      - src/diplomat_gate/cli.py
      - tests/test_audit.py
      - docs/audit-trail.md
 
-2. Yarizakura (GitHub: CrepuscularIRIS)
+2. Yarizakura (author of commit 1d4743a; the commit email is the GitHub noreply address
+   of the account CrepuscularIRIS)
    Commit: 1d4743a ("fix: add PYTHONUTF8=1 to subprocess env in test harness")
-   Files touched:
+   Files touched (6 lines in total, no mixed-licence note):
      - tests/test_examples.py
      - tests/test_integration.py
      - tests/test_release_readiness.py

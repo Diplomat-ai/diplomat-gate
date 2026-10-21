@@ -37,6 +37,8 @@ Apache-2.0. Version 0.4.0 and later are released under BSL 1.1.
 Portions of diplomat-gate were contributed by third parties under Apache-2.0. Their
 authors, the commits and the files concerned are listed in [NOTICE](./NOTICE), and the
 Apache-2.0 text is in [licenses/Apache-2.0.txt](./licenses/Apache-2.0.txt).
+Files that mix both carry the SPDX expression `BUSL-1.1 AND Apache-2.0` and a
+"Portions Copyright" note at the top.
 
 ## diplomat-agent
 
