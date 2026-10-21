@@ -74,4 +74,17 @@ Do **not** file public issues. See [`SECURITY.md`](SECURITY.md).
 
 ## License
 
-By contributing, you agree your contributions are licensed under Apache 2.0.
+diplomat-gate is released under the Business Source License 1.1 (see [LICENSE](LICENSE)
+and [LICENSING.md](LICENSING.md)).
+
+By submitting a pull request, you:
+
+1. declare that you have the right to submit your contribution, that it is your own
+   original work or that you are otherwise entitled to submit it; and
+2. grant Diplomat Services SASU a perpetual, worldwide, irrevocable, sublicensable
+   license to use, reproduce, modify, distribute and otherwise exploit your contribution,
+   including the right to relicense it under the Business Source License 1.1 or under any
+   other terms, including commercial terms.
+
+You keep the copyright in your contribution. The PR template contains a checkbox to
+confirm this.

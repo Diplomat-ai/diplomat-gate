@@ -533,5 +533,5 @@ BSL 1.1 is a source-available license, not an OSI-approved open source license. 
 
 ## Contributing
 
-By submitting a contribution, you agree that it may be distributed under the terms of this license and assign the rights needed for the Licensor to relicense it. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+By submitting a pull request, you declare that you have the right to contribute and you grant Diplomat Services SASU a perpetual, worldwide, irrevocable, sublicensable license, including the right to relicense your contribution. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
