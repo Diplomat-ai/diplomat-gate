@@ -1,0 +1,25 @@
+diplomat-gate
+Copyright (c) 2026 Diplomat Services SASU
+
+diplomat-gate is released under the Business Source License 1.1 (see LICENSE and
+LICENSING.md).
+
+Portions of this software are Copyright (c) their respective authors and licensed under
+Apache-2.0. The full text of the Apache License, Version 2.0 is in licenses/Apache-2.0.txt.
+These portions were contributed while the project was distributed under Apache-2.0, and
+their copyright and license notices are retained here.
+
+1. Mohak Gupta (GitHub: lukiod)
+   Commit: 2d42eb1 ("Add audit export command: SARIF and JSONL formats")
+   Files touched:
+     - src/diplomat_gate/audit.py
+     - src/diplomat_gate/cli.py
+     - tests/test_audit.py
+     - docs/audit-trail.md
+
+2. Yarizakura (GitHub: CrepuscularIRIS)
+   Commit: 1d4743a ("fix: add PYTHONUTF8=1 to subprocess env in test harness")
+   Files touched:
+     - tests/test_examples.py
+     - tests/test_integration.py
+     - tests/test_release_readiness.py
