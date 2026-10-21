@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Framework adapters — translate third-party tool-call shapes into ``ToolCall``.
 
 Each submodule depends only on ``diplomat_gate`` itself; the third-party

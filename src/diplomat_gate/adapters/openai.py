@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """OpenAI Chat Completions tool-call adapter.
 
 Translates the ``tool_calls`` array returned by ``chat.completions`` into

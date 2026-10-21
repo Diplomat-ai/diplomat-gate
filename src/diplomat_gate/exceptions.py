@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Exceptions raised by diplomat-gate when a tool call is blocked or needs review."""
 
 from __future__ import annotations

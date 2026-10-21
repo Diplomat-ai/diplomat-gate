@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Payment policies — amount limit, velocity, daily limit, duplicate detection, recipient blocklist."""
 
 from __future__ import annotations

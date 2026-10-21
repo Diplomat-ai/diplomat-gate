@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Load policies from YAML files or Python dicts."""
 
 from __future__ import annotations

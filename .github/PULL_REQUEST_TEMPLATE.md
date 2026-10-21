@@ -33,3 +33,4 @@
 - [ ] Public API changes documented in `README.md` or `docs/`
 - [ ] `CHANGELOG.md` updated under `[Unreleased]`
 - [ ] Security implications considered (policy bypass, audit integrity)
+- [ ] I have read the contribution clause in `CONTRIBUTING.md` (License section): I have the right to submit this contribution and I grant Diplomat Services SASU the license it describes, including the right to relicense

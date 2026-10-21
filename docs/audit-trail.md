@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: BUSL-1.1 AND Apache-2.0 -->
+<!-- Portions Copyright Mohak Gupta, licensed under Apache-2.0 (see NOTICE) -->
+
 # Audit trail — hash-chain integrity
 
 The diplomat-gate audit log is an **append-only, hash-chained SQLite

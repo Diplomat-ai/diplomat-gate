@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """diplomat-gate — Approval gates for AI agent payments and emails.
 
 from diplomat_gate import Gate

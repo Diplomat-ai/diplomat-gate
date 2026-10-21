@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Validate gate.yaml configuration files.
 
 Pure, side-effect-free inspection of a configuration file. Does not

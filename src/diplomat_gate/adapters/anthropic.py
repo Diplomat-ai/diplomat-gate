@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Anthropic Messages API ``tool_use`` adapter.
 
 Translates ``tool_use`` content blocks emitted by ``messages.create`` into

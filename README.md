@@ -92,8 +92,8 @@ Recommended: diplomat-gate
 
 `diplomat-gate` is the missing deterministic policy layer. It intercepts calls,
 evaluates them against a YAML policy file, and returns
-**CONTINUE / REVIEW / STOP** before execution — in ~20 µs for a single-policy
-evaluation, ~500 µs mean for a 5-policy set, with no LLM call, no network request.
+**CONTINUE / REVIEW / STOP** before execution — in ~18 µs for a simple
+policy, ~496 µs mean for a 5-policy set, with no LLM call, no network request.
 
 ## Works with every framework
 
@@ -132,7 +132,7 @@ Also works with Anthropic tool_use, CrewAI, AutoGen, PythonClaw, and any agent f
 - **Reproducible OpenClaw demo** — `python demos/openclaw/run.py` shows
   the insurance email incident in under 60 seconds, no API key needed.
 - **Release validation pipeline** — `scripts/validate_release.py` runs a
-  15-step gate: lint → tests → benchmarks → build → install → smoke → demo.
+  17-step gate: lint → tests → benchmarks → build → install → smoke → demo.
 
 ## What's new in 0.2.0
 
@@ -466,7 +466,7 @@ diplomat-gate is solo-maintained and AI-assisted: a large share of the commits
 are authored by me but committed through an AI coding agent. What matters for a
 security tool is not who typed the lines but whether the behavior is verifiable.
 The credibility anchors are the ones you can check yourself: 272 tests, a
-15-step release gate (`scripts/validate_release.py`), a green CI matrix across
+17-step release gate (`scripts/validate_release.py`), a green CI matrix across
 Python 3.10–3.13 on Linux / Windows / macOS, and runnable examples that need no
 API key. Run `python -m pytest tests/ -v` and `python benchmarks/run.py` and
 judge the tool on its output.
@@ -517,21 +517,21 @@ it with complementary tools for what it doesn't.
 
 - **Free to use:** you can read, modify, self-host and run diplomat-gate in production for your own internal use, including in commercial products that use it to guard your own agents.
 - **Not allowed without a commercial license:** offering diplomat-gate (or a substantial part of its functionality) to third parties as a hosted, managed or resold service, such as an agent-governance or audit service that competes with Diplomat.
-- **Becomes open source:** each version converts automatically to **Apache License 2.0** four years after its release.
+- **Becomes Apache-2.0 on its Change Date:** each version converts to **Apache License 2.0** on its own Change Date.
 
 | | |
 |---|---|
 | Licensor | Diplomat Services SASU |
-| Licensed Work | diplomat-gate 0.4.0 |
+| Licensed Work | diplomat-gate 0.4.1 |
 | Additional Use Grant | Production use is permitted, provided you do not offer the Licensed Work to third parties as a hosted or managed service that competes with the Licensor's paid offerings. |
-| Change Date | Four years after each version's release date |
+| Change Date | Each version has its own Change Date, set in LICENSE, four years after that version's release. |
 | Change License | Apache License 2.0 |
 
-Need a commercial license or have a question about your use case? Contact **josselin@diplomat.run**.
+Need a commercial license or have a question about your use case? Contact **josselin@diplomat.run**. A summary of the grant, the Change Dates and the earlier Apache-2.0 versions is in [LICENSING.md](./LICENSING.md); LICENSE prevails.
 
 BSL 1.1 is a source-available license, not an OSI-approved open source license. The static scanner [`diplomat-agent`](https://github.com/Diplomat-ai/diplomat-agent) remains fully open source under its own license.
 
 ## Contributing
 
-By submitting a contribution, you agree that it may be distributed under the terms of this license and assign the rights needed for the Licensor to relicense it. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+By submitting a pull request, you declare that you have the right to contribute and you grant Diplomat Services SASU a perpetual, worldwide, irrevocable, sublicensable license, including the right to relicense your contribution. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 

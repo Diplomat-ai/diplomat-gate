@@ -1,7 +1,8 @@
+# SPDX-License-Identifier: BUSL-1.1
 """In-memory state store for stateful policies (rate limits, velocity, dedup).
 
-Thread-safe. State is lost on process restart — intentional for the open-source
-version. Diplomat hosted uses persistent storage.
+Thread-safe. State is lost on process restart — intentional for the self-hosted
+library. Diplomat hosted uses persistent storage.
 """
 
 from __future__ import annotations
