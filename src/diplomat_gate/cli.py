@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Command-line interface for diplomat-gate.
 
 Currently exposes ``audit``, ``review``, and ``validate`` subcommands:

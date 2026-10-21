@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Common helpers shared by every framework adapter."""
 
 from __future__ import annotations

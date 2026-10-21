@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Core data models — ToolCall, Verdict, Violation, Receipt, Decision, PolicyResult."""
 
 from __future__ import annotations

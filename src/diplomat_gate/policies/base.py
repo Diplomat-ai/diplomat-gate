@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Base policy class."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """LangChain adapter — wrap a tool with gate enforcement.
 
 This module is duck-typed: it does not import ``langchain`` or

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Human-in-the-loop review queue for ``REVIEW`` verdicts.
 
 Backed by a separate SQLite database from the audit log so that operator

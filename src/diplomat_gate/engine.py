@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BUSL-1.1
 """Gate — the core evaluation engine."""
 
 from __future__ import annotations
