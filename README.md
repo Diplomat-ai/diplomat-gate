@@ -92,8 +92,8 @@ Recommended: diplomat-gate
 
 `diplomat-gate` is the missing deterministic policy layer. It intercepts calls,
 evaluates them against a YAML policy file, and returns
-**CONTINUE / REVIEW / STOP** before execution — in ~20 µs for a single-policy
-evaluation, ~500 µs mean for a 5-policy set, with no LLM call, no network request.
+**CONTINUE / REVIEW / STOP** before execution — in ~18 µs for a simple
+policy, ~496 µs mean for a 5-policy set, with no LLM call, no network request.
 
 ## Works with every framework
 
