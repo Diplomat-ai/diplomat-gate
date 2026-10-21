@@ -25,7 +25,7 @@ Apache License, Version 2.0.
 | Version | Change Date |
 |---|---|
 | 0.4.0 | 2030-09-26 |
-| 0.4.1 | see [LICENSE](./LICENSE) |
+| 0.4.1 | 2030-10-21 (see [LICENSE](./LICENSE)) |
 
 ## Earlier versions
 

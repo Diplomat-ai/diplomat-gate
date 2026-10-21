@@ -522,7 +522,7 @@ it with complementary tools for what it doesn't.
 | | |
 |---|---|
 | Licensor | Diplomat Services SASU |
-| Licensed Work | diplomat-gate 0.4.0 |
+| Licensed Work | diplomat-gate 0.4.1 |
 | Additional Use Grant | Production use is permitted, provided you do not offer the Licensed Work to third parties as a hosted or managed service that competes with the Licensor's paid offerings. |
 | Change Date | Each version has its own Change Date, set in LICENSE, four years after that version's release. |
 | Change License | Apache License 2.0 |
